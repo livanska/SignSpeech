@@ -8,7 +8,8 @@
     "ios": "expo start --ios",
     "web": "expo start --web",
     "eject": "expo eject",
-    "test": "jest --watchAll"
+    "test": "jest --watchAll",
+    "prettier": "prettier --config .prettierrc \"**/*.{ts,tsx,js,jsx}\" --write"
   },
   "jest": {
     "preset": "jest-expo"
@@ -38,8 +39,12 @@
     "@babel/core": "^7.12.9",
     "@types/react": "~17.0.21",
     "@types/react-native": "~0.64.12",
-    "jest-expo": "~44.0.1",
+    "eslint": "^8.9.0",
+    "eslint-config-prettier": "^8.3.0",
+    "eslint-plugin-react-native": "^4.0.0",
     "jest": "^26.6.3",
+    "jest-expo": "~44.0.1",
+    "prettier": "2.5.1",
     "react-test-renderer": "17.0.1",
     "typescript": "~4.3.5"
   },
