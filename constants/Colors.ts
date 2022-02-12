@@ -1,19 +1,21 @@
-const tintColorLight = '#2f95dc';
-const tintColorDark = '#fff';
+export enum COLORS {
+  headerText = "#4F4F4F",
+  mainText = "#656565",
+  lightText = "#C4C4C4",
+  primaryLight = "#FF0080",
+  primaryMedium = "#DE0C96",
+  primaryDark = "#C31AB3",
+  success = "#05DB81",
+  fail = "#FC1055",
+  white = '"#fff"',
+}
 
-export default {
+export const COLOR_THEMES = {
   light: {
-    text: '#000',
-    background: '#fff',
-    tint: tintColorLight,
-    tabIconDefault: '#ccc',
-    tabIconSelected: tintColorLight,
-  },
-  dark: {
-    text: '#fff',
-    background: '#000',
-    tint: tintColorDark,
-    tabIconDefault: '#ccc',
-    tabIconSelected: tintColorDark,
+    text: COLORS.mainText,
+    background: COLORS.white,
+    tint: COLORS.primaryLight,
+    tabIconDefault: COLORS.headerText,
+    tabIconSelected: COLORS.primaryLight,
   },
 };
