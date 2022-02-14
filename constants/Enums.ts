@@ -1,12 +1,12 @@
 export enum ICON_TITLES {
-  HOME = 'home',
-  TRANSLATE = 'translate',
-  LEARNING = 'study',
-  BACK = 'back',
-  CAMERA = 'camera',
-  CHANGE_CAMERA = 'camera-change',
-  PROFILE = 'profile',
-  EDIT = 'edit',
+  home = 'home',
+  translate = 'translate',
+  learning = 'study',
+  back = 'back',
+  camera = 'camera',
+  changeCamera = 'camera-change',
+  profile = 'profile',
+  edit = 'edit',
 }
 
 export enum FONT_TYPES {

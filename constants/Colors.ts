@@ -7,7 +7,8 @@ export enum COLORS {
   primaryDark = '#C31AB3',
   success = '#05DB81',
   fail = '#FC1055',
-  white = '"#fff"',
+  white = '#fff',
+  lightBlue = '£EEF3F5',
 }
 
 export const COLOR_THEMES = {
