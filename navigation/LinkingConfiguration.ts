@@ -7,7 +7,7 @@
 import { LinkingOptions } from '@react-navigation/native';
 import * as Linking from 'expo-linking';
 
-import { RootStackParamList } from '../types';
+import { RootStackParamList } from './types';
 import { ROUTES } from './routes';
 
 const linking: LinkingOptions<RootStackParamList> = {
@@ -24,6 +24,11 @@ const linking: LinkingOptions<RootStackParamList> = {
           Learning: {
             screens: {
               LearningScreen: ROUTES.learning,
+            },
+          },
+          Profile: {
+            screens: {
+              ProfileScreen: ROUTES.profile,
             },
           },
           // TabThree: {

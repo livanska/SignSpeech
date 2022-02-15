@@ -3,9 +3,9 @@ import { StyleSheet } from 'react-native';
 import EditScreenInfo from '../components/EditScreenInfo';
 import { Text, View } from '../components/Themed';
 import { ScrollView } from 'react-native';
-import { RootTabScreenProps } from '../types';
+import { RootTabScreenProps } from '../navigation/types';
 
-export default function TabOneScreen({ navigation }: RootTabScreenProps<'TabOne'>) {
+export default function TabOneScreen({ navigation }: RootTabScreenProps<'Home'>) {
   return (
     <ScrollView>
       <Text style={styles.title}>Tab One</Text>

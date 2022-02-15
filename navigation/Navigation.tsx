@@ -17,12 +17,13 @@ import ModalScreen from '../screens/ModalScreen';
 import NotFoundScreen from '../screens/NotFoundScreen';
 import TabOneScreen from '../screens/TabOneScreen';
 import TabTwoScreen from '../screens/TabTwoScreen';
-import { RootStackParamList, RootTabParamList, RootTabScreenProps } from '../types';
+import { RootStackParamList, RootTabParamList, RootTabScreenProps } from './types';
 import LinkingConfiguration from './LinkingConfiguration';
 import { ROUTES } from './routes';
 import { textStyles } from '../constants/TextStyle';
 import { ITabBarIconProps, TabBarIcon } from '../components/TabBarIcon';
 import HomeScreen from '../screens/HomeScreen';
+import Profile from '../screens/ProfileScreen';
 
 export default function Navigation() {
   const isAuthorized = true;
@@ -117,7 +118,7 @@ function BottomTabNavigator() {
       />
       <BottomTab.Screen
         name={ROUTES.profile}
-        component={TabTwoScreen}
+        component={Profile}
         options={{
           tabBarIcon: ({ color }) => <TabBarIcon name={ICON_TITLES.profile} color={color} />,
         }}

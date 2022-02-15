@@ -13,7 +13,7 @@ export default function TabTwoScreen() {
       <Text style={styles.title}>Tab Two</Text>
       <View style={styles.separator} lightColor="#eee" darkColor="rgba(255,255,255,0.1)" />
 
-      <Icon name={ICON_TITLES.CHANGE_CAMERA} size={24} color={COLORS.headerText} />
+      <Icon name={ICON_TITLES.changeCamera} size={24} color={COLORS.headerText} />
       <EditScreenInfo path="/screens/TabTwoScreen.tsx" />
     </View>
   );
