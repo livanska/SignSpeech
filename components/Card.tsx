@@ -1,4 +1,12 @@
-import { StyleSheet, Text, View, Image, TouchableOpacity, ImageBackground } from 'react-native';
+import {
+  StyleSheet,
+  Text,
+  View,
+  Image,
+  ImageBackground,
+  TouchableHighlight,
+  Alert,
+} from 'react-native';
 import { COLORS } from '../constants/Colors';
 import { FONT_TYPES } from '../constants/Enums';
 export enum CARD_TYPE {
@@ -12,11 +20,20 @@ export interface ICardProps {
   type: CARD_TYPE;
   minutesLimit?: number;
 }
-const image = { uri: 'https://reactjs.org/logo-og.png' };
+const image = {
+  uri: 'https://i.stack.imgur.com/l60Hf.png',
+};
 
 const Card = (props: ICardProps) => {
   return (
-    <TouchableOpacity>
+    <TouchableHighlight
+      style={styles.cardContainer}
+      activeOpacity={0.5}
+      underlayColor={COLORS.primaryDark}
+      onPress={() => {
+        Alert.alert('Touchable Highlight pressed.');
+      }}
+    >
       <View style={styles.cardContainer}>
         <ImageBackground
           source={image}
@@ -38,7 +55,7 @@ const Card = (props: ICardProps) => {
           </View>
         </ImageBackground>
       </View>
-    </TouchableOpacity>
+    </TouchableHighlight>
   );
 };
 
@@ -47,7 +64,7 @@ const styles = StyleSheet.create({
     width: 325,
     height: 200,
     borderRadius: 13,
-    backgroundColor: COLORS.fail,
+    backgroundColor: COLORS.white,
   },
   cardImage: {
     width: 325,
