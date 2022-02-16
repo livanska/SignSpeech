@@ -13,7 +13,7 @@ const TitleRow = ({ items, title, subtitle }: ITitleRowProps) => {
     <View style={styles.row}>
       <View style={styles.rowHeadings}>
         <Text style={textStyles.rowHeading}>{title}</Text>
-        <Text style={textStyles.subtitle}>{subtitle}</Text>
+        {subtitle && <Text style={textStyles.subtitle}>{subtitle}</Text>}
       </View>
       <CardCarousel {...{ items }} />
     </View>
@@ -22,11 +22,11 @@ const TitleRow = ({ items, title, subtitle }: ITitleRowProps) => {
 
 const styles = StyleSheet.create({
   row: {
-    marginTop: 15,
-    marginBottom: 15,
+    marginVertical: 12,
   },
   rowHeadings: {
-    marginLeft: 15,
+    paddingLeft: 15,
+    paddingBottom: 5,
     width: SCREEN_SIZE.width - 15,
   },
 });

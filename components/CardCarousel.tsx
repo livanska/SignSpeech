@@ -25,9 +25,8 @@ const CardCarousel = ({ items }: ICardCarouselProps) => {
         activeSlideAlignment={'start'}
         style={{ paddingRight: 0 }}
         contentContainerCustomStyle={{
-          marginTop: 15,
-          marginBottom: 15,
-          marginLeft: 10,
+          paddingVertical: 5,
+          paddingLeft: 10,
           overflow: 'hidden',
           width: 335 * items.length + 10,
         }}
