@@ -13,7 +13,7 @@ const TitleRow = ({ items, title, subtitle }: ITitleRowProps) => {
     <View style={styles.row}>
       <View style={styles.rowHeadings}>
         <Text style={textStyles.rowHeading}>{title}</Text>
-        <Text style={textStyles.rowSubtitle}>{subtitle}</Text>
+        <Text style={textStyles.subtitle}>{subtitle}</Text>
       </View>
       <CardCarousel {...{ items }} />
     </View>

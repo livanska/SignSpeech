@@ -13,8 +13,13 @@ export const textStyles = StyleSheet.create({
     paddingBottom: 4,
     color: COLORS.headerText,
   },
-  rowSubtitle: {
+  subtitle: {
     fontFamily: FONT_TYPES.light,
+    fontSize: 16,
+    color: COLORS.mainText,
+  },
+  default: {
+    fontFamily: FONT_TYPES.regular,
     fontSize: 16,
     color: COLORS.mainText,
   },

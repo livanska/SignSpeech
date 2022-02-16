@@ -8,7 +8,9 @@ export enum COLORS {
   success = '#05DB81',
   fail = '#FC1055',
   white = '#fff',
-  lightBlue = '£EEF3F5',
+  black = '#000',
+  lightBlue = '#EEF3F5',
+  menuItemPressed = '#F2F2F2',
 }
 
 export const COLOR_THEMES = {
