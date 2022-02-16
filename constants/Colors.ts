@@ -11,7 +11,10 @@ export enum COLORS {
   black = '#000',
   lightBlue = '#EEF3F5',
   menuItemPressed = '#F2F2F2',
+  transparent = 'transparent',
 }
+
+export const PRIMARY_GRADIENT = [COLORS.primaryLight, COLORS.primaryMedium, COLORS.primaryDark];
 
 export const COLOR_THEMES = {
   light: {

@@ -24,9 +24,10 @@ import { textStyles } from '../constants/TextStyle';
 import { ITabBarIconProps, TabBarIcon } from '../components/TabBarIcon';
 import HomeScreen from '../screens/HomeScreen';
 import Profile from '../screens/ProfileScreen';
+import Authorization from '../screens/AutorizationScreen';
 
 export default function Navigation() {
-  const isAuthorized = true;
+  const isAuthorized = false;
 
   return (
     <NavigationContainer linking={LinkingConfiguration}>
@@ -55,6 +56,11 @@ function AuthorizedNavigator() {
 function UnAuthorizedNavigator() {
   return (
     <Stack.Navigator>
+      <Stack.Screen
+        name="Authorization"
+        component={Authorization}
+        options={{ headerShown: false, contentStyle: { backgroundColor: COLORS.white } }}
+      />
       <Stack.Screen name="NotFound" component={NotFoundScreen} options={{ title: 'Oops!' }} />
     </Stack.Navigator>
   );
@@ -74,7 +80,7 @@ function BottomTabNavigator() {
       screenOptions={{
         headerStatusBarHeight: 32,
         tabBarShowLabel: false,
-        tabBarActiveTintColor: COLOR_THEMES.light.tint,
+        tabBarActiveTintColor: COLORS.primaryLight,
         headerShadowVisible: true,
         headerStyle: styles.header,
         headerTitleStyle: textStyles.heading,
@@ -95,7 +101,7 @@ function BottomTabNavigator() {
               <FontAwesome
                 name="info-circle"
                 size={25}
-                color={COLOR_THEMES.light.text}
+                color={COLORS.mainText}
                 style={{ marginRight: 15 }}
               />
             </Pressable>
@@ -137,7 +143,3 @@ const styles = StyleSheet.create({
     borderBottomLeftRadius: 13,
   },
 });
-
-/**
- * You can explore the built-in icon families and icons on the web at https://icons.expo.fyi/
- */
