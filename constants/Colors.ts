@@ -13,8 +13,10 @@ export enum COLORS {
   menuItemPressed = '#F2F2F2',
   transparent = 'transparent',
 }
-
-export const PRIMARY_GRADIENT = [COLORS.primaryLight, COLORS.primaryMedium, COLORS.primaryDark];
+export const GRADIENTS = {
+  PRIMARY: [COLORS.primaryLight, COLORS.primaryMedium, COLORS.primaryDark],
+  DISABLED: [COLORS.lightText, COLORS.mainText, COLORS.headerText],
+};
 
 export const COLOR_THEMES = {
   light: {

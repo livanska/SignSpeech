@@ -17,17 +17,18 @@ export interface ILinkProps {
   linkText: string;
   onPress(): void;
   preLinkText?: string;
+  isHeading?: boolean;
 }
-const Link = ({ linkText, preLinkText, onPress }: ILinkProps) => {
+const Link = ({ linkText, preLinkText, isHeading, onPress }: ILinkProps) => {
   return (
     <View style={styles.linkContainer}>
       {preLinkText && (
         <View style={styles.preLink}>
-          <Text style={textStyles.default}>{preLinkText}</Text>
+          <Text style={isHeading ? textStyles.heading : textStyles.default}>{preLinkText}</Text>
         </View>
       )}
       <TouchableWithoutFeedback style={{}} onPress={onPress}>
-        <Text style={textStyles.link}>{linkText}</Text>
+        <Text style={isHeading ? textStyles.headingLink : textStyles.link}>{linkText}</Text>
       </TouchableWithoutFeedback>
     </View>
   );

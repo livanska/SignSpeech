@@ -34,6 +34,11 @@ export const textStyles = StyleSheet.create({
     fontSize: 16,
     color: COLORS.primaryLight,
   },
+  headingLink: {
+    fontFamily: FONT_TYPES.bold,
+    fontSize: 18,
+    color: COLORS.primaryLight,
+  },
   input: {
     height: 48,
     paddingHorizontal: 20,
@@ -49,5 +54,10 @@ export const textStyles = StyleSheet.create({
     fontFamily: FONT_TYPES.regular,
     fontSize: 16,
     color: COLORS.mainText,
+  },
+  error: {
+    color: COLORS.fail,
+    fontFamily: FONT_TYPES.regular,
+    fontSize: 16,
   },
 });

@@ -10,7 +10,7 @@ import {
   Button,
 } from 'react-native';
 import { LinearGradient } from 'expo-linear-gradient';
-import { COLORS, PRIMARY_GRADIENT } from '../constants/Colors';
+import { COLORS, GRADIENTS } from '../constants/Colors';
 import { textStyles } from '../constants/TextStyle';
 
 export interface IGradientButtonProps {
@@ -18,12 +18,17 @@ export interface IGradientButtonProps {
   onPress(): void;
   width?: number;
   height?: number;
+  disabled?: boolean;
 }
-const GradientButton = ({ title, onPress, ...sizes }: IGradientButtonProps) => {
+const GradientButton = ({ title, onPress, disabled, ...sizes }: IGradientButtonProps) => {
   return (
-    <View style={styles.shadowContainer}>
-      <LinearGradient colors={PRIMARY_GRADIENT} style={styles.buttonContainer}>
+    <View style={!disabled && styles.shadowContainer}>
+      <LinearGradient
+        colors={disabled ? GRADIENTS.DISABLED : GRADIENTS.PRIMARY}
+        style={styles.buttonContainer}
+      >
         <TouchableHighlight
+          disabled={disabled}
           style={[styles.buttonContainer, sizes]}
           activeOpacity={1}
           underlayColor={COLORS.primaryMedium}
