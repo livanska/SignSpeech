@@ -15,6 +15,10 @@ import { textStyles } from '../constants/TextStyle';
 import GradientButton from '../components/GradientButton';
 import Link from '../components/Link';
 import { useEffect, useState } from 'react';
+import { useSetRecoilState } from 'recoil';
+import { userState } from '../state/atoms';
+import { IUser } from '../state/types';
+
 enum AUTH_ERROR {
   passwordMatch = "Passwords don't match!",
   emptyFields = 'Fill in all the fields!',
@@ -40,7 +44,7 @@ interface IUserRegisterInput extends IUserInput {
   confirmPassword: string;
 }
 
-const userDefault = {
+const userDefaultInputsValues: IUserRegisterInput = {
   email: '',
   password: '',
   confirmPassword: '',
@@ -62,17 +66,20 @@ const pageProps = {
 const Authorization = () => {
   const [pageType, setPageType] = useState<AUTH_PAGE_TYPE>(AUTH_PAGE_TYPE.login);
   const [pageTypeProps, setPageTypeProps] = useState<IPageProps>(pageProps.login);
-  const [inputValues, setInputValues] = useState<IUserRegisterInput>(userDefault);
+  const [inputValues, setInputValues] = useState<IUserRegisterInput>(userDefaultInputsValues);
+  const setUser = useSetRecoilState(userState);
   const [error, setError] = useState<AUTH_ERROR | null>(null);
 
   useEffect(() => {
     setPageTypeProps(pageProps[pageType]);
-    setInputValues(userDefault);
+    setInputValues(userDefaultInputsValues);
     setError(null);
   }, [pageType]);
 
   const togglePageType = (): void =>
-    setPageType(pageType === AUTH_PAGE_TYPE.login ? AUTH_PAGE_TYPE.register : AUTH_PAGE_TYPE.login);
+    setPageType(isLogin() ? AUTH_PAGE_TYPE.register : AUTH_PAGE_TYPE.login);
+
+  const isLogin = (): boolean => pageType === AUTH_PAGE_TYPE.login;
 
   const handleInputChange = (input: string, valuePropName: string): void => {
     setInputValues((prevValues: IUserRegisterInput) => ({
@@ -92,7 +99,15 @@ const Authorization = () => {
   };
 
   const handleAuth = (): void => {
-    Object.values(inputValues).includes('') && setError(AUTH_ERROR.emptyFields);
+    Object.values(
+      isLogin() ? (inputValues as IUserInput) : (inputValues as IUserRegisterInput)
+    ).includes('') && setError(AUTH_ERROR.emptyFields);
+    setUser((prev: IUser) => ({
+      ...prev,
+      isAuthorized: true,
+      fullName: 'Danna Paola',
+      email: 'dannapaola@gmail.com',
+    }));
     //todo auth user logic
   };
 

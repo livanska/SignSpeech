@@ -1,13 +1,8 @@
-/**
- * If you are not familiar with React Navigation, refer to the "Fundamentals" guide:
- * https://reactnavigation.org/docs/getting-started
- *
- */
 import { FontAwesome } from '@expo/vector-icons';
 import { createBottomTabNavigator } from '@react-navigation/bottom-tabs';
 import { NavigationContainer } from '@react-navigation/native';
 import { createNativeStackNavigator } from '@react-navigation/native-stack';
-import * as React from 'react';
+import { useEffect, useState } from 'react';
 import { Pressable } from 'react-native';
 import { StyleSheet } from 'react-native';
 
@@ -25,22 +20,19 @@ import { ITabBarIconProps, TabBarIcon } from '../components/TabBarIcon';
 import HomeScreen from '../screens/HomeScreen';
 import Profile from '../screens/ProfileScreen';
 import Authorization from '../screens/AutorizationScreen';
-import Camera from '../screens/CameraScreen';
+import Camera, { ICameraScreenProps } from '../screens/CameraScreen';
+import { useRecoilValue } from 'recoil';
+import { userState } from '../state/atoms';
 
 export default function Navigation() {
-  const isAuthorized = true;
-
+  const user = useRecoilValue(userState);
   return (
     <NavigationContainer linking={LinkingConfiguration}>
-      {isAuthorized ? <AuthorizedNavigator /> : <UnAuthorizedNavigator />}
+      {user.isAuthorized ? <AuthorizedNavigator /> : <UnAuthorizedNavigator />}
     </NavigationContainer>
   );
 }
 
-/**
- * A root stack navigator is often used for displaying modals on top of all other content.
- * https://reactnavigation.org/docs/modal
- */
 const Stack = createNativeStackNavigator<RootStackParamList>();
 
 function AuthorizedNavigator() {
@@ -67,11 +59,9 @@ function UnAuthorizedNavigator() {
   );
 }
 
-/**
- * A bottom tab navigator displays tab buttons on the bottom of the display to switch screens.
- * https://reactnavigation.org/docs/bottom-tab-navigator
- */
 const BottomTab = createBottomTabNavigator<RootTabParamList>();
+
+const LearningCamera = () => <Camera reachedFromPage={ROUTES.learning} />;
 
 function BottomTabNavigator() {
   return (
@@ -114,7 +104,7 @@ function BottomTabNavigator() {
       />
       <BottomTab.Screen
         name={ROUTES.learning}
-        component={()=>Camera({ reachedFromPage: ROUTES.learning })}
+        component={LearningCamera}
         options={{
           tabBarStyle: { display: 'none' },
           tabBarIcon: ({ color }) => <TabBarIcon name={ICON_TITLES.learning} color={color} />,

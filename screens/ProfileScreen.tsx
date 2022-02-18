@@ -5,49 +5,56 @@ import Menu from '../components/Menu';
 import { COLORS } from '../constants/Colors';
 import { ICON_TITLES } from '../constants/Enums';
 import { textStyles } from '../constants/TextStyle';
-import { launchImageLibraryAsync, MediaTypeOptions } from 'expo-image-picker';
+import { ImagePickerResult, launchImageLibraryAsync, MediaTypeOptions } from 'expo-image-picker';
 import { useState } from 'react';
-const mockMenu = {
-  items: [
-    {
-      title: 'Clean my progress',
-      onPress: () => {},
-    },
-    {
-      title: 'Edit profile',
-      onPress: () => {},
-    },
-    {
-      title: 'Log out',
-      onPress: () => {},
-    },
-  ],
-};
-const mockUser = {
-  image: 'https://i.stack.imgur.com/l60Hf.png',
-  fullName: 'Danna Paola',
-  email: 'dannapaola@gmail.com',
-};
+import { useRecoilState, useResetRecoilState } from 'recoil';
+import { userState } from '../state/atoms';
+import { IUser, userDefault } from '../state/types';
+
+// const mockUser = {
+//   image: 'https://i.stack.imgur.com/l60Hf.png',
+//   fullName: 'Danna Paola',
+//   email: 'dannapaola@gmail.com',
+// };
 
 const Profile = () => {
-  const [image, setImage] = useState(mockUser.image);
+  const removeUser = useResetRecoilState(userState);
+  const [user, setUser] = useRecoilState(userState);
   const changeImage = async () => {
-    let result = await launchImageLibraryAsync({
+    let result: ImagePickerResult = await launchImageLibraryAsync({
       mediaTypes: MediaTypeOptions.Images,
       allowsEditing: true,
       aspect: [1, 1],
       quality: 1,
     });
-    if (!result.cancelled) {
-      setImage(result.uri);
-    }
+    !result.cancelled &&
+      setUser((prev: IUser) => ({
+        ...prev,
+        profileImage: !result.cancelled ? result.uri : userDefault.profileImage,
+      }));
+  };
+  const profileOptions = {
+    items: [
+      {
+        title: 'Clean my progress',
+        onPress: () => {},
+      },
+      {
+        title: 'Edit profile',
+        onPress: () => {},
+      },
+      {
+        title: 'Log out',
+        onPress: removeUser,
+      },
+    ],
   };
 
   return (
     <View style={styles.profileContainer}>
       <View style={styles.infoContainer}>
         <View style={styles.profileImageCircle}>
-          <Image style={styles.profileImage} source={{ uri: image }} />
+          <Image style={styles.profileImage} source={{ uri: user.profileImage }} />
           <GlassPanel
             {...{ height: 25, width: 30 }}
             style={styles.changeImageIcon}
@@ -58,12 +65,12 @@ const Profile = () => {
         </View>
         <View style={styles.textContainer}>
           <View style={styles.fullNameContainer}>
-            <Text style={textStyles.heading}>{mockUser.fullName}</Text>
+            <Text style={textStyles.heading}>{user.fullName}</Text>
           </View>
-          <Text style={textStyles.subtitle}>{mockUser.email}</Text>
+          <Text style={textStyles.subtitle}>{user.email}</Text>
         </View>
       </View>
-      <Menu {...mockMenu} />
+      <Menu {...profileOptions} />
     </View>
   );
 };

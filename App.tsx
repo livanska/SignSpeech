@@ -1,5 +1,6 @@
 import { StatusBar } from 'expo-status-bar';
 import { SafeAreaProvider } from 'react-native-safe-area-context';
+import { RecoilRoot } from 'recoil';
 import useCachedResources from './hooks/useCachedResources';
 import Navigation from './navigation/Navigation';
 
@@ -16,8 +17,10 @@ export default function App() {
   } else {
     return (
       <SafeAreaProvider>
-        <Navigation />
-        <StatusBar style="dark" />
+        <RecoilRoot>
+          <Navigation />
+          <StatusBar style="dark" />
+        </RecoilRoot>
       </SafeAreaProvider>
     );
   }
