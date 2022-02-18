@@ -13,9 +13,10 @@ export interface IMenuItemProps {
 const Menu = ({ items }: IMenuProps) => {
   return (
     <View>
-      {items.map((item: IMenuItemProps) => (
+      {items.map((item: IMenuItemProps, index: number) => (
         <TouchableHighlight
           onPress={item.onPress}
+          key={index}
           style={styles.menuTab}
           activeOpacity={1}
           underlayColor={COLORS.menuItemPressed}

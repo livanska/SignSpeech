@@ -7,6 +7,12 @@ export enum ICON_TITLES {
   changeCamera = 'camera-change',
   profile = 'profile',
   edit = 'edit',
+  chevronRight = 'chevronRight',
+  chevronLeft = 'chevronLeft',
+  fail = 'fail',
+  success = 'success',
+  logOut = 'logOut',
+  trash = 'trash',
 }
 
 export enum FONT_TYPES {

@@ -1,6 +1,7 @@
-import { ScrollView, StyleSheet } from 'react-native';
+import { ScrollView, StyleSheet, View } from 'react-native';
 import TitleRow from '../components/TitleRow';
 import { CARD_TYPE } from '../components/Card';
+import { COLORS } from '../constants/Colors';
 export const items = [
   {
     title: 'Led Zeppelin',
@@ -30,17 +31,19 @@ const rowMockData2 = {
 
 const Home = () => {
   return (
-    <ScrollView style={styles.homeContainer}>
-      <TitleRow {...rowMockData} />
-      <TitleRow {...rowMockData2} />
-      <TitleRow {...rowMockData} />
-      <TitleRow {...rowMockData2} />
+    <ScrollView>
+      <View style={styles.homeContainer}>
+        <TitleRow {...rowMockData} />
+        <TitleRow {...rowMockData2} />
+        <TitleRow {...rowMockData} />
+        <TitleRow {...rowMockData2} />
+      </View>
     </ScrollView>
   );
 };
 const styles = StyleSheet.create({
   homeContainer: {
-    paddingTop: 10,
+    marginTop: 90,
   },
 });
 export default Home;

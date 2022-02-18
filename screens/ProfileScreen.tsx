@@ -44,7 +44,7 @@ const Profile = () => {
   };
 
   return (
-    <View>
+    <View style={styles.profileContainer}>
       <View style={styles.infoContainer}>
         <View style={styles.profileImageCircle}>
           <Image style={styles.profileImage} source={{ uri: image }} />
@@ -69,6 +69,9 @@ const Profile = () => {
 };
 
 const styles = StyleSheet.create({
+  profileContainer: {
+    paddingTop: 90,
+  },
   infoContainer: {
     padding: 40,
     alignItems: 'center',

@@ -25,9 +25,10 @@ import { ITabBarIconProps, TabBarIcon } from '../components/TabBarIcon';
 import HomeScreen from '../screens/HomeScreen';
 import Profile from '../screens/ProfileScreen';
 import Authorization from '../screens/AutorizationScreen';
+import Camera from '../screens/CameraScreen';
 
 export default function Navigation() {
-  const isAuthorized = false;
+  const isAuthorized = true;
 
   return (
     <NavigationContainer linking={LinkingConfiguration}>
@@ -78,6 +79,9 @@ function BottomTabNavigator() {
       initialRouteName={ROUTES.home}
       sceneContainerStyle={{ backgroundColor: COLORS.white }}
       screenOptions={{
+        headerLeftContainerStyle: { backgroundColor: COLORS.transparent },
+        headerTransparent: true,
+        headerBackgroundContainerStyle: styles.header,
         headerStatusBarHeight: 32,
         tabBarShowLabel: false,
         tabBarActiveTintColor: COLORS.primaryLight,
@@ -110,8 +114,9 @@ function BottomTabNavigator() {
       />
       <BottomTab.Screen
         name={ROUTES.learning}
-        component={TabTwoScreen}
+        component={Camera}
         options={{
+          tabBarStyle: { display: 'none' },
           tabBarIcon: ({ color }) => <TabBarIcon name={ICON_TITLES.learning} color={color} />,
         }}
       />
@@ -134,6 +139,7 @@ function BottomTabNavigator() {
 }
 const styles = StyleSheet.create({
   header: {
+    backgroundColor: COLORS.white,
     borderBottomWidth: 0,
     shadowColor: '#000',
     shadowOpacity: 0.09,
