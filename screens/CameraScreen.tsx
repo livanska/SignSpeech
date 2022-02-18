@@ -31,6 +31,7 @@ const Camera = ({ navigation, reachedFromPage }: ICameraScreenProps) => {
   }, []);
 
   if (hasPermission === null) {
+    navigation.replace(ROUTES.root);
     return <View />;
   }
   if (hasPermission === false) {
@@ -43,7 +44,7 @@ const Camera = ({ navigation, reachedFromPage }: ICameraScreenProps) => {
     <View>
       <CameraComponent style={styles.cameraComponentContainer} type={cameraType}>
         <View style={styles.topRowContainer}>
-          <BackButton onPress={() => navigation.replace('Root')} />
+          <BackButton onPress={() => navigation.replace(ROUTES.root)} />
           <View style={styles.signContainer}>
             <GlassPanel
               height={160}

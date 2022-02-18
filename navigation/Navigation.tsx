@@ -114,7 +114,9 @@ function BottomTabNavigator() {
       />
       <BottomTab.Screen
         name={ROUTES.learning}
-        component={Camera}
+        component={(props: RootTabScreenProps<`${ROUTES.learning}`>) =>
+          Camera({ reachedFromPage: ROUTES.learning, ...props })
+        }
         options={{
           tabBarStyle: { display: 'none' },
           tabBarIcon: ({ color }) => <TabBarIcon name={ICON_TITLES.learning} color={color} />,
