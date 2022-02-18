@@ -1,19 +1,13 @@
-import {
-  StyleSheet,
-  Text,
-  View,
-  Image,
-  ImageBackground,
-  TouchableHighlight,
-  Alert,
-} from 'react-native';
+import { StyleSheet, Text, View, Image, ImageBackground, TouchableHighlight } from 'react-native';
 import { COLORS } from '../constants/Colors';
 import { FONT_TYPES } from '../constants/Enums';
+import { ROUTES } from '../navigation/routes';
+import { useNavigation } from '@react-navigation/native';
+
 export enum CARD_TYPE {
   signsToText = 'Signs learning',
   textToSign = 'Signs translating',
 }
-
 export interface ICardProps {
   title: string;
   image: string;
@@ -25,14 +19,13 @@ const image = {
 };
 
 const Card = (props: ICardProps) => {
+  const navigation = useNavigation();
   return (
     <TouchableHighlight
       style={styles.cardContainer}
       activeOpacity={0.5}
       underlayColor={COLORS.primaryDark}
-      onPress={() => {
-        Alert.alert('Touchable Highlight pressed.');
-      }}
+      onPress={() => navigation.navigate(ROUTES.root, { screen: ROUTES.learning })}
     >
       <View style={styles.cardContainer}>
         <ImageBackground

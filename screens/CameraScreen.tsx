@@ -1,3 +1,4 @@
+import { useNavigation } from '@react-navigation/native';
 import { Camera as CameraComponent, requestCameraPermissionsAsync, Constants } from 'expo-camera';
 import { CameraType } from 'expo-camera/build/Camera.types';
 import React, { useEffect, useState } from 'react';
@@ -11,14 +12,13 @@ import { COLORS } from '../constants/Colors';
 import { ICON_TITLES } from '../constants/Enums';
 import { SCREEN_SIZE } from '../constants/Layout';
 import { ROUTES } from '../navigation/routes';
-import { RootTabScreenProps } from '../navigation/types';
-
-export interface ICameraScreenProps extends RootTabScreenProps<`${ROUTES.learning}`> {
+export interface ICameraScreenProps {
   reachedFromPage: ROUTES.home | ROUTES.learning | ROUTES.translate;
   timeLimit?: number;
 }
 
-const Camera = ({ navigation, reachedFromPage }: ICameraScreenProps) => {
+const Camera = ({ reachedFromPage }: ICameraScreenProps) => {
+  const navigation = useNavigation();
   const [hasPermission, setHasPermission] = useState<boolean | null>(null);
   const [cameraType, setCameraType] = useState<CameraType>(Constants.Type.back);
   const [isCorrectSign, setIsCorrectSign] = useState<boolean | null>(null);
@@ -31,7 +31,6 @@ const Camera = ({ navigation, reachedFromPage }: ICameraScreenProps) => {
   }, []);
 
   if (hasPermission === null) {
-    navigation.replace(ROUTES.root);
     return <View />;
   }
   if (hasPermission === false) {
@@ -44,7 +43,7 @@ const Camera = ({ navigation, reachedFromPage }: ICameraScreenProps) => {
     <View>
       <CameraComponent style={styles.cameraComponentContainer} type={cameraType}>
         <View style={styles.topRowContainer}>
-          <BackButton onPress={() => navigation.replace(ROUTES.root)} />
+          <BackButton onPress={() => navigation.navigate(ROUTES.root, { screen: ROUTES.home })} />
           <View style={styles.signContainer}>
             <GlassPanel
               height={160}
