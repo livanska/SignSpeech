@@ -13,3 +13,13 @@ export const userDefault: IUser = {
   fullName: '',
   profileImage: 'https://i.stack.imgur.com/l60Hf.png',
 };
+
+export interface IScreen {
+  isLoading: boolean;
+  isOverlay: boolean;
+}
+
+export const screenDefault: IScreen = {
+  isLoading: false,
+  isOverlay: false,
+};

@@ -20,8 +20,9 @@ import { ITabBarIconProps, TabBarIcon } from '../components/TabBarIcon';
 import HomeScreen from '../screens/HomeScreen';
 import Profile from '../screens/ProfileScreen';
 import Authorization from '../screens/AutorizationScreen';
-import Camera, { ICameraScreenProps } from '../screens/CameraScreen';
+import Camera from '../screens/CameraScreen';
 import { useRecoilValue } from 'recoil';
+import Overlay from '../components/Overlay';
 import { userState } from '../state/atoms';
 
 export default function Navigation() {
@@ -37,13 +38,13 @@ const Stack = createNativeStackNavigator<RootStackParamList>();
 
 function AuthorizedNavigator() {
   return (
-    <Stack.Navigator>
-      <Stack.Screen name="Root" component={BottomTabNavigator} options={{ headerShown: false }} />
-      <Stack.Screen name="NotFound" component={NotFoundScreen} options={{ title: 'Oops!' }} />
-      <Stack.Group screenOptions={{ presentation: 'modal' }}>
-        <Stack.Screen name="Modal" component={ModalScreen} />
-      </Stack.Group>
-    </Stack.Navigator>
+    <>
+      <Overlay />
+      <Stack.Navigator>
+        <Stack.Screen name="Root" component={BottomTabNavigator} options={{ headerShown: false }} />
+        <Stack.Screen name="NotFound" component={NotFoundScreen} options={{ title: 'Oops!' }} />
+      </Stack.Navigator>
+    </>
   );
 }
 function UnAuthorizedNavigator() {

@@ -1,35 +1,110 @@
 import { StatusBar } from 'expo-status-bar';
-import { StyleSheet } from 'react-native';
+import { Children, ReactElement, useEffect, useRef, useState } from 'react';
+import {
+  StyleSheet,
+  Text,
+  View,
+  Modal,
+  Pressable,
+  TouchableWithoutFeedback,
+  Animated,
+} from 'react-native';
+import { useRecoilState } from 'recoil';
+import { COLORS } from '../constants/Colors';
+import { SCREEN_SIZE } from '../constants/Layout';
+import { screenState } from '../state/atoms';
+import { IScreen } from '../state/types';
 
-import EditScreenInfo from '../components/EditScreenInfo';
-import { Text, View } from '../components/Themed';
+export interface IModalProps {
+  visible: boolean;
+  close(): void;
+  height?: number;
+  children?: ReactElement;
+}
 
-export default function ModalScreen() {
+export default function ModalScreen({ visible, children, height = 400, close }: IModalProps) {
+  const [screen, setScreen] = useRecoilState(screenState);
+  const closeAnim = useRef(new Animated.Value(0)).current;
+
+  useEffect(() => {
+    Number.parseInt(JSON.stringify(closeAnim)) === height &&
+      !screen.isOverlay &&
+      setTimeout(() => close(), 190);
+    !screen.isOverlay
+      ? Animated.timing(closeAnim, {
+          toValue: 0,
+          useNativeDriver: false,
+          duration: 200,
+        }).start()
+      : closeAnim.setValue(height);
+  }, [screen.isOverlay, closeAnim]);
+
+  const closeModal = (): void => {
+    setScreen((prev: IScreen) => ({
+      ...prev,
+      isOverlay: false,
+    }));
+  };
+
   return (
-    <View style={styles.container}>
-      <Text style={styles.title}>Modal</Text>
-      <View style={styles.separator} lightColor="#eee" darkColor="rgba(255,255,255,0.1)" />
-      <EditScreenInfo path="/screens/ModalScreen.tsx" />
-
-      {/* Use a light status bar on iOS to account for the black space above the modal */}
-      <StatusBar />
-    </View>
+    <Modal
+      statusBarTranslucent={true}
+      animationType="slide"
+      transparent={true}
+      visible={visible}
+      onRequestClose={closeModal}
+    >
+      <TouchableWithoutFeedback onPress={closeModal}>
+        <View style={styles.backgroundFill} />
+      </TouchableWithoutFeedback>
+      <Animated.View style={[styles.modalView, { height: closeAnim }]}>{children}</Animated.View>
+    </Modal>
   );
 }
 
 const styles = StyleSheet.create({
-  container: {
-    flex: 1,
+  backgroundFill: {
+    position: 'absolute',
+    height: SCREEN_SIZE.height,
+    width: SCREEN_SIZE.width,
+    backgroundColor: COLORS.transparent,
+  },
+  modalView: {
+    position: 'absolute',
+    bottom: 0,
+    width: SCREEN_SIZE.width,
+    backgroundColor: COLORS.white,
+    borderRadius: 13,
+    padding: 35,
     alignItems: 'center',
-    justifyContent: 'center',
+    shadowColor: COLORS.black,
+    shadowOffset: {
+      width: 0,
+      height: 2,
+    },
+    shadowOpacity: 0.25,
+    shadowRadius: 4,
+    elevation: 5,
+    zIndex: 2,
   },
-  title: {
-    fontSize: 20,
+  button: {
+    borderRadius: 20,
+    padding: 10,
+    elevation: 2,
+  },
+  buttonOpen: {
+    backgroundColor: '#F194FF',
+  },
+  buttonClose: {
+    backgroundColor: '#2196F3',
+  },
+  textStyle: {
+    color: 'white',
     fontWeight: 'bold',
+    textAlign: 'center',
   },
-  separator: {
-    marginVertical: 30,
-    height: 1,
-    width: '80%',
+  modalText: {
+    marginBottom: 15,
+    textAlign: 'center',
   },
 });

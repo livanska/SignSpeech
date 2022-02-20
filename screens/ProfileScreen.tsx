@@ -6,10 +6,11 @@ import { COLORS } from '../constants/Colors';
 import { ICON_TITLES } from '../constants/Enums';
 import { textStyles } from '../constants/TextStyle';
 import { ImagePickerResult, launchImageLibraryAsync, MediaTypeOptions } from 'expo-image-picker';
-import { useState } from 'react';
-import { useRecoilState, useResetRecoilState } from 'recoil';
-import { userState } from '../state/atoms';
-import { IUser, userDefault } from '../state/types';
+import React, { useState } from 'react';
+import { useRecoilState, useResetRecoilState, useSetRecoilState } from 'recoil';
+import { screenState, userState } from '../state/atoms';
+import { IScreen, IUser, userDefault } from '../state/types';
+import ModalScreen from './ModalScreen';
 
 // const mockUser = {
 //   image: 'https://i.stack.imgur.com/l60Hf.png',
@@ -20,6 +21,8 @@ import { IUser, userDefault } from '../state/types';
 const Profile = () => {
   const removeUser = useResetRecoilState(userState);
   const [user, setUser] = useRecoilState(userState);
+  const setScreen = useSetRecoilState(screenState);
+  const [modalVisible, setModalVisible] = useState(false);
   const changeImage = async () => {
     let result: ImagePickerResult = await launchImageLibraryAsync({
       mediaTypes: MediaTypeOptions.Images,
@@ -33,6 +36,15 @@ const Profile = () => {
         profileImage: !result.cancelled ? result.uri : userDefault.profileImage,
       }));
   };
+
+  const openModal = (): void => {
+    setScreen((prev: IScreen) => ({
+      ...prev,
+      isOverlay: true,
+    }));
+    setModalVisible(true);
+  };
+
   const profileOptions = {
     items: [
       {
@@ -41,7 +53,7 @@ const Profile = () => {
       },
       {
         title: 'Edit profile',
-        onPress: () => {},
+        onPress: openModal,
       },
       {
         title: 'Log out',
@@ -52,6 +64,7 @@ const Profile = () => {
 
   return (
     <View style={styles.profileContainer}>
+      {modalVisible && <ModalScreen visible={modalVisible} close={() => setModalVisible(false)} />}
       <View style={styles.infoContainer}>
         <View style={styles.profileImageCircle}>
           <Image style={styles.profileImage} source={{ uri: user.profileImage }} />
