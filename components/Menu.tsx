@@ -1,28 +1,29 @@
-import { Button, Text, View, StyleSheet, Pressable, TouchableHighlight, Alert } from 'react-native';
+import { View, StyleSheet } from 'react-native';
 import { COLORS } from '../constants/Colors';
-import { FONT_TYPES } from '../constants/Enums';
+import { ICON_TITLES } from '../constants/Enums';
 import { SCREEN_SIZE } from '../constants/Layout';
-import { textStyles } from '../constants/TextStyle';
+import IconLink from './IconLink';
 export interface IMenuProps {
   items: IMenuItemProps[];
 }
 export interface IMenuItemProps {
   title: string;
+  icon: ICON_TITLES;
   onPress: () => void;
 }
+
 const Menu = ({ items }: IMenuProps) => {
   return (
     <View>
       {items.map((item: IMenuItemProps, index: number) => (
-        <TouchableHighlight
+        <IconLink
+          style={styles.menuTab}
+          linkText={item.title}
+          icon={item.icon}
+          iconSize={18}
           onPress={item.onPress}
           key={index}
-          style={styles.menuTab}
-          activeOpacity={1}
-          underlayColor={COLORS.menuItemPressed}
-        >
-          <Text style={textStyles.default}>{item.title}</Text>
-        </TouchableHighlight>
+        />
       ))}
     </View>
   );
@@ -33,7 +34,8 @@ const styles = StyleSheet.create({
     alignItems: 'flex-start',
     borderTopWidth: 1,
     borderColor: COLORS.lightBlue,
-    padding: 13,
+    paddingVertical: 13,
+    paddingHorizontal: 20,
     backgroundColor: COLORS.white,
   },
 });

@@ -1,17 +1,7 @@
-import {
-  StyleSheet,
-  Text,
-  View,
-  Image,
-  ImageBackground,
-  TouchableHighlight,
-  Alert,
-  TextInput,
-  Button,
-} from 'react-native';
+import { StyleSheet, Text, View, TouchableHighlight } from 'react-native';
 import { LinearGradient } from 'expo-linear-gradient';
-import { COLORS, GRADIENTS } from '../constants/Colors';
-import { textStyles } from '../constants/TextStyle';
+import { COLORS, GRADIENTS } from '../../constants/Colors';
+import { textStyles } from '../../constants/TextStyle';
 
 export interface IGradientButtonProps {
   title: string;

@@ -1,23 +1,13 @@
-import {
-  StyleSheet,
-  Text,
-  View,
-  Image,
-  ImageBackground,
-  TouchableHighlight,
-  Alert,
-  TextInput,
-  Button,
-} from 'react-native';
+import { StyleSheet, Text, View, Image, TextInput } from 'react-native';
 import { COLORS } from '../constants/Colors';
 import { FONT_TYPES } from '../constants/Enums';
 import { textStyles } from '../constants/TextStyle';
-import GradientButton from '../components/GradientButton';
+import GradientButton from '../components/Buttons/GradientButton';
 import Link from '../components/Link';
 import { useEffect, useState } from 'react';
 import { useSetRecoilState } from 'recoil';
 import { userState } from '../state/atoms';
-import { IUser } from '../state/types';
+import { IUser, USER_PROPS } from '../state/types';
 
 enum AUTH_ERROR {
   passwordMatch = "Passwords don't match!",
@@ -35,7 +25,6 @@ interface IPageProps {
   linkText: string;
   buttonTitle: string;
 }
-
 interface IUserInput {
   email: string;
   password: string;
@@ -87,10 +76,10 @@ const Authorization = () => {
       [valuePropName as keyof typeof inputValues]: input,
     }));
     if (
-      (valuePropName === 'password' &&
+      (valuePropName === USER_PROPS.password &&
         inputValues.confirmPassword &&
         input !== inputValues.confirmPassword) ||
-      (valuePropName === 'confirmPassword' &&
+      (valuePropName === USER_PROPS.confirmPassword &&
         inputValues.password &&
         input !== inputValues.password)
     ) {
@@ -127,7 +116,7 @@ const Authorization = () => {
             returnKeyType={'done'}
             placeholderTextColor={COLORS.lightText}
             placeholder="Email"
-            onChangeText={(input) => handleInputChange(input, 'email')}
+            onChangeText={(input) => handleInputChange(input, USER_PROPS.email)}
             value={inputValues.email}
           ></TextInput>
           <TextInput
@@ -139,7 +128,7 @@ const Authorization = () => {
             secureTextEntry={true}
             placeholder="Password"
             value={inputValues.password}
-            onChangeText={(input: string) => handleInputChange(input, 'password')}
+            onChangeText={(input: string) => handleInputChange(input, USER_PROPS.password)}
           ></TextInput>
           {pageType === AUTH_PAGE_TYPE.register && (
             <TextInput
@@ -150,7 +139,7 @@ const Authorization = () => {
               secureTextEntry={true}
               placeholder="Confirm password"
               value={inputValues.confirmPassword}
-              onChangeText={(input: string) => handleInputChange(input, 'confirmPassword')}
+              onChangeText={(input: string) => handleInputChange(input, USER_PROPS.confirmPassword)}
             ></TextInput>
           )}
           {error && (

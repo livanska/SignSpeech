@@ -6,6 +6,15 @@ export interface IUser {
   profileImage: string;
 }
 
+export enum USER_PROPS {
+  isAuthorized = 'isAuthorized',
+  email = 'email',
+  password = 'password',
+  fullName = 'fullName',
+  profileImage = 'profileImage',
+  confirmPassword = 'confirmPassword',
+}
+
 export const userDefault: IUser = {
   isAuthorized: false,
   email: '',

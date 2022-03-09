@@ -34,6 +34,11 @@ export const textStyles = StyleSheet.create({
     fontSize: 16,
     color: COLORS.primaryLight,
   },
+  aboveInputHeader: {
+    fontFamily: FONT_TYPES.bold,
+    fontSize: 16,
+    color: COLORS.primaryLight,
+  },
   headingLink: {
     fontFamily: FONT_TYPES.bold,
     fontSize: 18,

@@ -1,19 +1,7 @@
-import {
-  StyleSheet,
-  Text,
-  View,
-  Image,
-  ImageBackground,
-  TouchableHighlight,
-  Alert,
-  TextInput,
-  Button,
-} from 'react-native';
-import { LinearGradient } from 'expo-linear-gradient';
-import { COLORS, GRADIENTS } from '../constants/Colors';
-import { textStyles } from '../constants/TextStyle';
-import Icon from './Icon';
-import { ICON_TITLES } from '../constants/Enums';
+import { StyleSheet, View, TouchableHighlight } from 'react-native';
+import { COLORS } from '../../constants/Colors';
+import Icon from './../Icon';
+import { ICON_TITLES } from '../../constants/Enums';
 
 export interface IBackButtonProps {
   title?: string;

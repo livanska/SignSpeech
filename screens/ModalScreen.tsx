@@ -1,11 +1,9 @@
-import { StatusBar } from 'expo-status-bar';
-import { Children, ReactElement, useEffect, useRef, useState } from 'react';
+import { ReactElement, useEffect, useRef } from 'react';
 import {
   StyleSheet,
-  Text,
   View,
   Modal,
-  Pressable,
+  KeyboardAvoidingView,
   TouchableWithoutFeedback,
   Animated,
 } from 'react-native';
@@ -22,21 +20,21 @@ export interface IModalProps {
   children?: ReactElement;
 }
 
-export default function ModalScreen({ visible, children, height = 400, close }: IModalProps) {
+const ModalScreen = ({ visible, children, height = 400, close }: IModalProps) => {
   const [screen, setScreen] = useRecoilState(screenState);
-  const closeAnim = useRef(new Animated.Value(0)).current;
+  const closeAnim = useRef(new Animated.Value(-height)).current;
 
   useEffect(() => {
-    Number.parseInt(JSON.stringify(closeAnim)) === height &&
+    Number.parseInt(JSON.stringify(closeAnim)) === 0 &&
       !screen.isOverlay &&
-      setTimeout(() => close(), 190);
+      setTimeout(() => close(), 500);
     !screen.isOverlay
       ? Animated.timing(closeAnim, {
-          toValue: 0,
+          toValue: -height,
           useNativeDriver: false,
-          duration: 200,
+          duration: 400,
         }).start()
-      : closeAnim.setValue(height);
+      : closeAnim.setValue(0);
   }, [screen.isOverlay, closeAnim]);
 
   const closeModal = (): void => {
@@ -57,15 +55,31 @@ export default function ModalScreen({ visible, children, height = 400, close }: 
       <TouchableWithoutFeedback onPress={closeModal}>
         <View style={styles.backgroundFill} />
       </TouchableWithoutFeedback>
-      <Animated.View style={[styles.modalView, { height: closeAnim }]}>{children}</Animated.View>
+      <KeyboardAvoidingView
+        style={styles.keyboardAvoidingContainer}
+        keyboardVerticalOffset={0}
+        behavior={'position'}
+      >
+        <Animated.View style={[styles.modalView, { height: height, bottom: closeAnim }]}>
+          {children}
+        </Animated.View>
+      </KeyboardAvoidingView>
     </Modal>
   );
-}
+};
 
 const styles = StyleSheet.create({
+  keyboardAvoidingContainer: {
+    position: 'absolute',
+    bottom: 0,
+  },
+  backgroundFillContainer: {
+    zIndex: 0,
+  },
   backgroundFill: {
     position: 'absolute',
     height: SCREEN_SIZE.height,
+    zIndex: 0,
     width: SCREEN_SIZE.width,
     backgroundColor: COLORS.transparent,
   },
@@ -74,9 +88,8 @@ const styles = StyleSheet.create({
     bottom: 0,
     width: SCREEN_SIZE.width,
     backgroundColor: COLORS.white,
-    borderRadius: 13,
-    padding: 35,
-    alignItems: 'center',
+    borderTopRightRadius: 13,
+    borderTopLeftRadius: 13,
     shadowColor: COLORS.black,
     shadowOffset: {
       width: 0,
@@ -87,24 +100,6 @@ const styles = StyleSheet.create({
     elevation: 5,
     zIndex: 2,
   },
-  button: {
-    borderRadius: 20,
-    padding: 10,
-    elevation: 2,
-  },
-  buttonOpen: {
-    backgroundColor: '#F194FF',
-  },
-  buttonClose: {
-    backgroundColor: '#2196F3',
-  },
-  textStyle: {
-    color: 'white',
-    fontWeight: 'bold',
-    textAlign: 'center',
-  },
-  modalText: {
-    marginBottom: 15,
-    textAlign: 'center',
-  },
 });
+
+export default ModalScreen;
