@@ -2,21 +2,16 @@ import { FontAwesome } from '@expo/vector-icons';
 import { createBottomTabNavigator } from '@react-navigation/bottom-tabs';
 import { NavigationContainer } from '@react-navigation/native';
 import { createNativeStackNavigator } from '@react-navigation/native-stack';
-import { useEffect, useState } from 'react';
 import { Pressable } from 'react-native';
 import { StyleSheet } from 'react-native';
-
-import { COLORS, COLOR_THEMES } from '../constants/Colors';
+import { COLORS } from '../constants/Colors';
 import { ICON_TITLES } from '../constants/Enums';
-import ModalScreen from '../screens/ModalScreen';
 import NotFoundScreen from '../screens/NotFoundScreen';
-import TabOneScreen from '../screens/TabOneScreen';
-import TabTwoScreen from '../screens/TabTwoScreen';
 import { RootStackParamList, RootTabParamList, RootTabScreenProps } from './types';
 import LinkingConfiguration from './LinkingConfiguration';
 import { ROUTES } from './routes';
 import { textStyles } from '../constants/TextStyle';
-import { ITabBarIconProps, TabBarIcon } from '../components/TabBarIcon';
+import { TabBarIcon } from '../components/TabBarIcon';
 import HomeScreen from '../screens/HomeScreen';
 import Profile from '../screens/ProfileScreen';
 import Authorization from '../screens/AutorizationScreen';
@@ -29,7 +24,7 @@ export default function Navigation() {
   const user = useRecoilValue(userState);
   return (
     <NavigationContainer linking={LinkingConfiguration}>
-      {user.isAuthorized ? <AuthorizedNavigator /> : <UnAuthorizedNavigator />}
+      {!user.isAuthorized ? <AuthorizedNavigator /> : <UnAuthorizedNavigator />}
     </NavigationContainer>
   );
 }
@@ -113,8 +108,9 @@ function BottomTabNavigator() {
       />
       <BottomTab.Screen
         name={ROUTES.translate}
-        component={TabTwoScreen}
+        component={LearningCamera}
         options={{
+          tabBarStyle: { display: 'none' },
           tabBarIcon: ({ color }) => <TabBarIcon name={ICON_TITLES.translate} color={color} />,
         }}
       />
