@@ -8,10 +8,4 @@
 <path d="M51.1247 38.1038C51.1247 38.1038 49.1685 40.8414 49.5047 45.6479" stroke="#EBA713" stroke-miterlimit="10" stroke-linecap="round" stroke-linejoin="round"/>
 <path d="M55.4269 43.1507C55.4269 43.1507 52.6375 40.8503 51.1247 37.8239C49.8954 35.3652 48.219 35.7568 46.1519 32.236C46.1519 32.236 43.9892 27.9507 45.5743 25.0548C47.1595 22.1589 49.6718 27.4304 50.5659 28.6597C51.46 29.889 53.5834 32.1805 54.5338 33.3535C55.4842 34.5265 56.4524 35.4841 57.4395 36.2959C58.7028 37.3339 60.6912 38.4166 60.7699 40.1878" stroke="#EBA713" stroke-miterlimit="10" stroke-linecap="round" stroke-linejoin="round"/>
 <path d="M24.6875 74.7969L28.5156 54.5625H34.3555L28.0469 83H22.1484L17.5195 63.9766L12.8906 83H6.99219L0.683594 54.5625H6.52344L10.3711 74.7578L15.0586 54.5625H20.0195L24.6875 74.7969Z" fill="url(#paint0_diamond)"/>
-<defs>
-<radialGradient id="paint0_diamond" cx="0" cy="0" r="1" gradientUnits="userSpaceOnUse" gradientTransform="translate(17.197 71.8929) rotate(89.2299) scale(45.0934 18.0412)">
-<stop stop-color="#FFD458" stop-opacity="0.78"/>
-<stop offset="1" stop-color="#F9BF2E"/>
-</radialGradient>
-</defs>
 </svg>

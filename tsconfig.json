@@ -4,6 +4,7 @@
     "strict": true,
   },
   "include": [
-    "typings.d.ts"
+    "typings.d.ts",
+    "handimage/custom.d.ts"
   ]
 }

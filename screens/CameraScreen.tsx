@@ -2,7 +2,7 @@ import { useNavigation } from '@react-navigation/native';
 import { Camera as CameraComponent, requestCameraPermissionsAsync, Constants } from 'expo-camera';
 import { CameraType } from 'expo-camera/build/Camera.types';
 import React, { useEffect, useRef, useState } from 'react';
-import { View, Text, StyleSheet } from 'react-native';
+import { View, Text, StyleSheet, Image } from 'react-native';
 import BackButton from '../components/Buttons/BackButton';
 import GlassPanel from '../components/GlassPanel';
 import Icon from '../components/Icon';
@@ -14,12 +14,15 @@ import * as tf from '@tensorflow/tfjs';
 import * as handpose from '@tensorflow-models/handpose';
 import * as fp from 'fingerpose';
 import { cameraWithTensors } from '@tensorflow/tfjs-react-native';
-import { Signimage, Signpass } from '../handimage';
+import { ISign, LetterImages, Signs } from '../handimage';
 import Handsigns from '../handsigns';
 import Canvas from 'react-native-canvas';
-import { useIsFocused, useFocusEffect } from '@react-navigation/core';
+import { useIsFocused, useFocusEffect, findFocusedRoute } from '@react-navigation/core';
+// import C_hand from '../handimage/Chand.svg';
+import Svg from 'react-native-svg';
+import { COLORS } from '../constants/Colors';
 let frame = 0;
-const computeRecognitionEveryNFrames = 10;
+const computeRecognitionEveryNFrames = 1;
 export interface ICameraScreenProps {
   reachedFromPage: ROUTES.home | ROUTES.learning | ROUTES.translate;
   timeLimit?: number;
@@ -32,13 +35,17 @@ const Camera = ({ reachedFromPage }: ICameraScreenProps) => {
   const [isCameraActive, setIsCameraActive] = useState<boolean>(false);
   const [hasPermission, setHasPermission] = useState<boolean | null>(null);
   const [cameraType, setCameraType] = useState<CameraType>(Constants.Type.back);
+  const [currentSign, setCurrentSign] = useState<ISign>(null);
   const [isCorrectSign, setIsCorrectSign] = useState<boolean | null>(null);
-  const a = useIsFocused();
+  const isFocusedScreen: boolean = useIsFocused();
   let cameraRef = useRef(null);
   const canvasRef = useRef(null);
-  let signList: any = [];
   let net: any;
-  console.log('FOCUSED ', useIsFocused());
+  let GE: any;
+
+  // console.log('FOCUSED ', useIsFocused());
+  // console.log('FOCUSED ', findFocusedRoute().name);
+
   const fingerJoints = {
     thumb: [0, 1, 2, 3, 4],
     index: [0, 5, 6, 7, 8],
@@ -47,91 +54,137 @@ const Camera = ({ reachedFromPage }: ICameraScreenProps) => {
     pinky: [0, 17, 18, 19, 20],
   };
 
+  // useEffect(() => {
+  //   (async () => {
+  //     await tf.ready();
+  //     tf.ENV.set('WEBGL_CONV_IM2COL', false);
+  //     setRandomSign();
+  //     canvasRef.current.width = SCREEN_SIZE.width;
+  //     canvasRef.current.height = SCREEN_SIZE.height;
+  //   })();
+  // }, []);
+
   useEffect(() => {
     (async () => {
-      //cameraRef = null;
-      if (a) {
-        const { status } = await requestCameraPermissionsAsync();
-        setHasPermission(status === 'granted');
+      console.log('here');
+      if (isFocusedScreen) {
+        if (!hasPermission) {
+          const { status } = await requestCameraPermissionsAsync();
+          setHasPermission(status === 'granted');
+        }
         setIsCameraActive(true);
-        await tf.ready();
 
-        // console.log(status);
-        net = await handpose.load();
-        _signList();
-        canvasRef.current.width = SCREEN_SIZE.width;
-        canvasRef.current.height = SCREEN_SIZE.height;
+        await tf.ready().then(() => {
+          tf.ENV.set('WEBGL_CONV_IM2COL', false);
+          setRandomSign();
+          canvasRef.current.width = SCREEN_SIZE.width;
+          canvasRef.current.height = SCREEN_SIZE.height;
+        });
       } else {
         cameraRef = null;
         setIsCameraActive(false);
-        // setHasPermission(false);
       }
-      // setIsCameraActive(true);
     })();
-  }, [a]);
-  ////////////////////////////////
+  }, [isFocusedScreen]);
+
   useEffect(() => {
     setHasPermission(isCameraActive);
   }, [isCameraActive]);
-  function _signList() {
-    signList = generateSigns();
-  }
+
+  useEffect(() => {
+    setTimeout(() => {
+      setIsCorrectSign(null);
+      isCorrectSign && setRandomSign();
+    }, 2000);
+  }, [isCorrectSign]);
+
+  const setRandomSign = (): void => setCurrentSign(Signs[Math.floor(Math.random() * Signs.length)]);
+
+  const prepareTF = async (): Promise<void> => {
+    net = await handpose.load({ maxContinuousChecks: 10 });
+    GE = new fp.GestureEstimator([
+      Handsigns.aSign,
+      Handsigns.bSign,
+      Handsigns.cSign,
+      Handsigns.dSign,
+      Handsigns.eSign,
+      Handsigns.fSign,
+      Handsigns.gSign,
+      Handsigns.hSign,
+      Handsigns.iSign,
+      Handsigns.jSign,
+      Handsigns.kSign,
+      Handsigns.lSign,
+      Handsigns.mSign,
+      Handsigns.nSign,
+      Handsigns.oSign,
+      Handsigns.pSign,
+      Handsigns.qSign,
+      Handsigns.rSign,
+      Handsigns.sSign,
+      Handsigns.tSign,
+      Handsigns.uSign,
+      Handsigns.vSign,
+      Handsigns.wSign,
+      Handsigns.xSign,
+      Handsigns.ySign,
+      Handsigns.zSign,
+    ]);
+  };
+
+  let a = 10;
+  let counter = 0;
 
   async function detect(nextImageTensor: any, net: any) {
-    if (!hasPermission) return;
+    if (!hasPermission || !isCameraActive) return;
+
     const video = nextImageTensor;
 
     canvasRef.current.width = SCREEN_SIZE.width;
     canvasRef.current.height = SCREEN_SIZE.height;
 
-    try {
-      const hand = await net.estimateHands(video);
+    tf.dispose();
+    const hand = await net.estimateHands(video);
 
-      if (hand.length > 0) {
-        //loading the fingerpose model
-        const GE = new fp.GestureEstimator([
-          fp.Gestures.ThumbsUpGesture,
-          Handsigns.aSign,
-          Handsigns.bSign,
-          Handsigns.cSign,
-          Handsigns.dSign,
-          Handsigns.eSign,
-          Handsigns.fSign,
-          Handsigns.gSign,
-          Handsigns.hSign,
-          Handsigns.iSign,
-          Handsigns.jSign,
-          Handsigns.kSign,
-          Handsigns.lSign,
-          Handsigns.mSign,
-          Handsigns.nSign,
-          Handsigns.oSign,
-          Handsigns.pSign,
-          Handsigns.qSign,
-          Handsigns.rSign,
-          Handsigns.sSign,
-          Handsigns.tSign,
-          Handsigns.uSign,
-          Handsigns.vSign,
-          Handsigns.wSign,
-          Handsigns.xSign,
-          Handsigns.ySign,
-          Handsigns.zSign,
-        ]);
-
+    if (hand[0]?.handInViewConfidence === 1) {
+      counter === 0 && console.log(hand);
+      try {
         const estimatedGestures = await GE.estimate(hand[0].landmarks, 6.5);
-
-        if (estimatedGestures.gestures !== undefined && estimatedGestures.gestures.length > 0) {
-          const confidence = estimatedGestures.gestures.map((p: any) => p.confidence);
-          const maxConfidence = confidence.indexOf(Math.max.apply(undefined, confidence));
-        }
         const ctx = canvasRef.current.getContext('2d');
         drawHand(hand, ctx);
+        if (estimatedGestures.gestures !== undefined && estimatedGestures.gestures.length > 0) {
+          // const confidence = estimatedGestures.gestures.map((p: any) => p.confidence);
+          // const maxConfidence = confidence.indexOf(Math.max.apply(undefined, confidence));
+
+          if (
+            Array.from(estimatedGestures.gestures.map((el) => el.name)).includes(
+              currentSign?.letter
+            )
+          ) {
+            // counter = 20;
+            console.log('YESSSSSSSSSSSS');
+            setIsCorrectSign(true);
+            // setRandomSign();
+          } else setIsCorrectSign(false);
+          if (counter < a) {
+            console.log(
+              estimatedGestures.gestures.map((el) => `${el.name}[${el.score}]`).join(' ')
+            );
+            console.log(
+              Array.from(estimatedGestures.gestures.map((el) => el.name)).includes(
+                currentSign?.letter
+              )
+            );
+            console.log(currentSign?.letter);
+            counter++;
+          }
+        }
+
+        tf.dispose(video);
+      } catch (e) {
+        console.log('ERRRROR', e);
+        return;
       }
-    } catch (e) {
-      console.log(e);
-      return;
-      // console.log(e);
     }
   }
 
@@ -178,36 +231,29 @@ const Camera = ({ reachedFromPage }: ICameraScreenProps) => {
       });
     }
   };
-
-  function shuffle(a: any) {
-    for (let i = a.length - 1; i > 0; i--) {
-      const j = Math.floor(Math.random() * (i + 1));
-      [a[i], a[j]] = [a[j], a[i]];
-    }
-    return a;
-  }
-
-  function generateSigns() {
-    const password = shuffle(Signpass);
-    return password;
+  function debounce(func, timeout = 1500) {
+    let timer;
+    return (...args) => {
+      clearTimeout(timer);
+      timer = setTimeout(() => {
+        func.apply(this, args);
+      }, timeout);
+    };
   }
 
   const handleCameraStream = async (images: any, updatePreview: any, gl: any) => {
-    net = await handpose.load();
+    await prepareTF();
+    console.log('here');
     const loop = async () => {
       if (net) {
-        if (frame % computeRecognitionEveryNFrames === 0) {
-          const nextImageTensor = images.next().value;
-          if (nextImageTensor) {
-            detect(nextImageTensor, net);
-          }
+        const nextImageTensor = images.next().value;
+        if (nextImageTensor) {
+          debounce(detect(nextImageTensor, net));
         }
-        frame += 1;
-        frame = frame % computeRecognitionEveryNFrames;
       }
       requestAnimationFrame(loop);
     };
-    isCameraActive && loop();
+    isCameraActive && net && GE && loop();
   };
   ///////////////////////////////////////////////
 
@@ -217,14 +263,15 @@ const Camera = ({ reachedFromPage }: ICameraScreenProps) => {
   if (hasPermission === false) {
     return <Text>No access to camera</Text>;
   }
+
   const handleCameraTypeChange = (): void =>
     setCameraType(cameraType === Constants.Type.back ? Constants.Type.front : Constants.Type.back);
 
   return (
     <View style={styles.pageWrapper}>
       <TensorCamera
-        resizeHeight={320}
-        resizeWidth={320}
+        resizeHeight={SCREEN_SIZE.height}
+        resizeWidth={SCREEN_SIZE.width + 100}
         resizeDepth={3}
         ref={cameraRef}
         style={styles.cameraComponentContainer}
@@ -232,25 +279,21 @@ const Camera = ({ reachedFromPage }: ICameraScreenProps) => {
         autorender={true}
         type={cameraType}
         useCustomShadersToResize={false}
-        cameraTextureWidth={1080}
-        cameraTextureHeight={1920}
+        cameraTextureWidth={SCREEN_SIZE.width}
+        cameraTextureHeight={SCREEN_SIZE.height}
       />
       <Canvas ref={canvasRef} style={styles.canvasComponent} />
+      <View style={styles.blinkOverlay} />
       <View style={styles.overlayInfoContainer}>
         <View style={styles.topRowContainer}>
-          <BackButton
-            onPress={() => {
-              // setIsCameraActive(false);
-              navigation.navigate(ROUTES.root, { screen: ROUTES.home });
-            }}
-          />
+          <BackButton onPress={() => navigation.navigate(ROUTES.root, { screen: ROUTES.home })} />
           <View style={styles.signContainer}>
-            <GlassPanel
-              height={160}
-              width={135}
-              style={{}}
-              onPress={handleCameraTypeChange}
-            ></GlassPanel>
+            <GlassPanel height={160} width={135} style={{}} onPress={handleCameraTypeChange}>
+              {/* <Image source={currentSign?.signImage} /> */}
+              {/* {currentSign?.signImage} */}
+              {/* <C_hand /> */}
+              <Text>{currentSign?.letter}</Text>
+            </GlassPanel>
             {isCorrectSign !== null && (
               <StatusCircle style={styles.statusCircle} isSuccess={isCorrectSign} />
             )}
@@ -291,6 +334,15 @@ const styles = StyleSheet.create({
     position: 'absolute',
     width: '100%',
     height: '100%',
+  },
+  blinkOverlay: {
+    position: 'absolute',
+    width: '100%',
+    height: '100%',
+    zIndex: 10,
+    backgroundColor: COLORS.success,
+    flex: 0,
+    opacity: 0.2,
   },
   topRowContainer: {
     flex: 0,

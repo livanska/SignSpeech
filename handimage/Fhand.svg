@@ -5,10 +5,4 @@
 <path d="M75.2003 24.0083C75.2003 24.0083 75.1085 26.085 74.5677 27.747C74.027 29.4091 73.6542 30.3802 73.8406 30.8365" stroke="#F9BF2E" stroke-miterlimit="10" stroke-linecap="round" stroke-linejoin="round"/>
 <path d="M69.4355 33.9778C69.4355 33.9778 69.1378 35.9246 69.4355 37.8714" stroke="#F9BF2E" stroke-miterlimit="10" stroke-linecap="round" stroke-linejoin="round"/>
 <path d="M33.6914 65.3789H22.4414V77H16.582V48.5625H35.0977V53.3086H22.4414V60.6523H33.6914V65.3789Z" fill="url(#paint0_diamond)"/>
-<defs>
-<radialGradient id="paint0_diamond" cx="0" cy="0" r="1" gradientUnits="userSpaceOnUse" gradientTransform="translate(24.2424 65.8929) rotate(88.0754) scale(45.1147 45.0815)">
-<stop stop-color="#FFD458" stop-opacity="0.78"/>
-<stop offset="1" stop-color="#F9BF2E"/>
-</radialGradient>
-</defs>
 </svg>

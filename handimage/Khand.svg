@@ -9,10 +9,4 @@
 <path d="M66.8818 17.8083C66.8818 17.8083 68.183 16.0295 69.9753 16.4211C71.7676 16.8127 71.7676 17.8397 71.8796 20.1553" stroke="#F9BF2E" stroke-miterlimit="10" stroke-linecap="round" stroke-linejoin="round"/>
 <path d="M71.8796 26.3352C71.8796 26.3352 71.8232 32.8323 72.3277 33.6728C72.8313 34.5134 72.9434 36.8094 72.9434 37.4259C72.9434 38.0425 73.1118 46.8354 71.2631 49.6359C69.4152 52.4363 65.5502 55.5164 65.4946 58.9334C65.4381 62.3495 65.1021 61.8459 65.2141 64.1418C65.3261 66.4377 65.1585 71.2554 65.4946 73.7754C65.8307 76.2953 65.9427 80.1604 65.9427 81.0001" stroke="#F9BF2E" stroke-miterlimit="10" stroke-linecap="round" stroke-linejoin="round"/>
 <path d="M23.75 67.5938L20.7031 70.875V79H14.8438V50.5625H20.7031V63.4531L23.2812 59.918L30.5273 50.5625H37.7344L27.6367 63.1992L38.0273 79H31.0547L23.75 67.5938Z" fill="url(#paint0_diamond)"/>
-<defs>
-<radialGradient id="paint0_diamond" cx="0" cy="0" r="1" gradientUnits="userSpaceOnUse" gradientTransform="translate(24.2424 67.8929) rotate(88.0754) scale(45.1147 45.0815)">
-<stop stop-color="#FFD458" stop-opacity="0.78"/>
-<stop offset="1" stop-color="#F9BF2E"/>
-</radialGradient>
-</defs>
 </svg>

@@ -7,10 +7,4 @@
 <path d="M52.7256 20.8452C52.7256 20.8452 49.5595 21.0835 47.5352 20.8452" stroke="#F9BF2E" stroke-miterlimit="10" stroke-linecap="round" stroke-linejoin="round"/>
 <path d="M51.9071 19.2571C51.9071 19.2571 49.56 18.1963 48.6924 17.0396" stroke="#F9BF2E" stroke-miterlimit="10" stroke-linecap="round" stroke-linejoin="round"/>
 <path d="M30.1367 68.1406H19.8633L17.9102 74H11.6797L22.2656 45.5625H27.6953L38.3398 74H32.1094L30.1367 68.1406ZM21.4453 63.3945H28.5547L24.9805 52.75L21.4453 63.3945Z" fill="url(#paint0_diamond)"/>
-<defs>
-<radialGradient id="paint0_diamond" cx="0" cy="0" r="1" gradientUnits="userSpaceOnUse" gradientTransform="translate(24.2424 62.8929) rotate(88.0754) scale(45.1147 45.0815)">
-<stop stop-color="#FFD458" stop-opacity="0.78"/>
-<stop offset="1" stop-color="#F9BF2E"/>
-</radialGradient>
-</defs>
 </svg>
