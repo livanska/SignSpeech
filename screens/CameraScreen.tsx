@@ -2,7 +2,7 @@ import { useNavigation } from '@react-navigation/native';
 import { Camera as CameraComponent, requestCameraPermissionsAsync, Constants } from 'expo-camera';
 import { CameraType } from 'expo-camera/build/Camera.types';
 import React, { useEffect, useRef, useState } from 'react';
-import { View, Text, StyleSheet, Image } from 'react-native';
+import { View, Text, StyleSheet, Platform } from 'react-native';
 import BackButton from '../components/Buttons/BackButton';
 import GlassPanel from '../components/GlassPanel';
 import Icon from '../components/Icon';
@@ -14,15 +14,12 @@ import * as tf from '@tensorflow/tfjs';
 import * as handpose from '@tensorflow-models/handpose';
 import * as fp from 'fingerpose';
 import { cameraWithTensors } from '@tensorflow/tfjs-react-native';
-import { ISign, LetterImages, Signs } from '../handimage';
+import { ISign, Signs } from '../handimage';
 import Handsigns from '../handsigns';
 import Canvas from 'react-native-canvas';
-import { useIsFocused, useFocusEffect, findFocusedRoute } from '@react-navigation/core';
-// import C_hand from '../handimage/Chand.svg';
-import Svg from 'react-native-svg';
+import { useIsFocused } from '@react-navigation/core';
 import { COLORS } from '../constants/Colors';
-let frame = 0;
-const computeRecognitionEveryNFrames = 1;
+
 export interface ICameraScreenProps {
   reachedFromPage: ROUTES.home | ROUTES.learning | ROUTES.translate;
   timeLimit?: number;
@@ -31,20 +28,24 @@ export interface ICameraScreenProps {
 const TensorCamera = cameraWithTensors(CameraComponent);
 
 const Camera = ({ reachedFromPage }: ICameraScreenProps) => {
+  let requestAnimationFrameId = 0;
   const navigation = useNavigation();
   const [isCameraActive, setIsCameraActive] = useState<boolean>(false);
   const [hasPermission, setHasPermission] = useState<boolean | null>(null);
   const [cameraType, setCameraType] = useState<CameraType>(Constants.Type.back);
   const [currentSign, setCurrentSign] = useState<ISign>(null);
+  const [predictedSigns, setPredictedSigns] = useState<string[]>(null);
   const [isCorrectSign, setIsCorrectSign] = useState<boolean | null>(null);
+  const [shouldOverlay, setShouldOverlay] = useState<boolean | null>(false);
   const isFocusedScreen: boolean = useIsFocused();
   let cameraRef = useRef(null);
   const canvasRef = useRef(null);
-  let net: any;
+  let model: any;
   let GE: any;
 
-  // console.log('FOCUSED ', useIsFocused());
-  // console.log('FOCUSED ', findFocusedRoute().name);
+  const textureDims =
+    Platform.OS === 'ios' ? { width: 1080, height: 1920 } : { width: 1600, height: 1200 };
+  const tensorDims = { width: 152, height: 200 };
 
   const fingerJoints = {
     thumb: [0, 1, 2, 3, 4],
@@ -54,26 +55,14 @@ const Camera = ({ reachedFromPage }: ICameraScreenProps) => {
     pinky: [0, 17, 18, 19, 20],
   };
 
-  // useEffect(() => {
-  //   (async () => {
-  //     await tf.ready();
-  //     tf.ENV.set('WEBGL_CONV_IM2COL', false);
-  //     setRandomSign();
-  //     canvasRef.current.width = SCREEN_SIZE.width;
-  //     canvasRef.current.height = SCREEN_SIZE.height;
-  //   })();
-  // }, []);
-
   useEffect(() => {
     (async () => {
-      console.log('here');
       if (isFocusedScreen) {
         if (!hasPermission) {
           const { status } = await requestCameraPermissionsAsync();
           setHasPermission(status === 'granted');
         }
         setIsCameraActive(true);
-
         await tf.ready().then(() => {
           tf.ENV.set('WEBGL_CONV_IM2COL', false);
           setRandomSign();
@@ -91,17 +80,8 @@ const Camera = ({ reachedFromPage }: ICameraScreenProps) => {
     setHasPermission(isCameraActive);
   }, [isCameraActive]);
 
-  useEffect(() => {
-    setTimeout(() => {
-      setIsCorrectSign(null);
-      isCorrectSign && setRandomSign();
-    }, 2000);
-  }, [isCorrectSign]);
-
-  const setRandomSign = (): void => setCurrentSign(Signs[Math.floor(Math.random() * Signs.length)]);
-
   const prepareTF = async (): Promise<void> => {
-    net = await handpose.load({ maxContinuousChecks: 10 });
+    model = await handpose.load({ maxContinuousChecks: 10 });
     GE = new fp.GestureEstimator([
       Handsigns.aSign,
       Handsigns.bSign,
@@ -132,69 +112,57 @@ const Camera = ({ reachedFromPage }: ICameraScreenProps) => {
     ]);
   };
 
-  let a = 10;
-  let counter = 0;
+  useEffect(() => {
+    if (shouldOverlay) return;
+    else {
+      if (predictedSigns?.includes(currentSign?.letter)) {
+        setIsCorrectSign(true);
+        setShouldOverlay(true);
+        setTimeout(() => {
+          setRandomSign();
+          setIsCorrectSign(null);
+          setShouldOverlay(false);
+        }, 2500);
+      } else setIsCorrectSign(false);
+    }
+  }, [predictedSigns, currentSign]);
 
-  async function detect(nextImageTensor: any, net: any) {
-    if (!hasPermission || !isCameraActive) return;
+  const setRandomSign = () => setCurrentSign(Signs[Math.floor(Math.random() * Signs.length)]);
+
+  const detect = async (nextImageTensor: any, model: any) => {
+    if (!hasPermission || !isCameraActive || !nextImageTensor) return;
 
     const video = nextImageTensor;
 
     canvasRef.current.width = SCREEN_SIZE.width;
     canvasRef.current.height = SCREEN_SIZE.height;
 
-    tf.dispose();
-    const hand = await net.estimateHands(video);
-
-    if (hand[0]?.handInViewConfidence === 1) {
-      counter === 0 && console.log(hand);
-      try {
-        const estimatedGestures = await GE.estimate(hand[0].landmarks, 6.5);
-        const ctx = canvasRef.current.getContext('2d');
-        drawHand(hand, ctx);
-        if (estimatedGestures.gestures !== undefined && estimatedGestures.gestures.length > 0) {
-          // const confidence = estimatedGestures.gestures.map((p: any) => p.confidence);
-          // const maxConfidence = confidence.indexOf(Math.max.apply(undefined, confidence));
-
-          if (
-            Array.from(estimatedGestures.gestures.map((el) => el.name)).includes(
-              currentSign?.letter
-            )
-          ) {
-            // counter = 20;
-            console.log('YESSSSSSSSSSSS');
-            setIsCorrectSign(true);
-            // setRandomSign();
-          } else setIsCorrectSign(false);
-          if (counter < a) {
-            console.log(
-              estimatedGestures.gestures.map((el) => `${el.name}[${el.score}]`).join(' ')
-            );
-            console.log(
-              Array.from(estimatedGestures.gestures.map((el) => el.name)).includes(
-                currentSign?.letter
-              )
-            );
-            console.log(currentSign?.letter);
-            counter++;
+    model.estimateHands(video).then((hand: { landmarks: any }[]) => {
+      if (hand[0]) {
+        try {
+          const estimatedGestures = GE.estimate(hand[0].landmarks, 7);
+          const ctx = canvasRef.current.getContext('2d');
+          drawHand(hand, ctx);
+          if (estimatedGestures.gestures !== undefined && estimatedGestures.gestures.length > 0) {
+            setPredictedSigns(estimatedGestures.gestures.map((el) => el.name));
           }
+          tf.dispose(video);
+        } catch (e) {
+          console.log('ERRRROR', e);
+          return;
         }
-
-        tf.dispose(video);
-      } catch (e) {
-        console.log('ERRRROR', e);
-        return;
       }
-    }
-  }
+    });
+  };
 
   const drawHand = (prediction: any, ctx: any) => {
-    if (prediction.length > 0) {
+    if (prediction.length > 0 && !isCorrectSign) {
       //loop to the preditions
       prediction.forEach((prediction) => {
         //grab landmarks
         const landmarks = prediction.landmarks;
-
+        let widthCoef = 3.4;
+        let heightCoef = 4.6;
         //loop the finger joints
         for (let j = 0; j < Object.keys(fingerJoints).length; j++) {
           let finger = Object.keys(fingerJoints)[j];
@@ -203,9 +171,16 @@ const Camera = ({ reachedFromPage }: ICameraScreenProps) => {
             const secondJointIndex = fingerJoints[finger][k + 1];
 
             //draw joints
+
             ctx.beginPath();
-            ctx.moveTo(landmarks[firstJointIndex][0], landmarks[firstJointIndex][1]);
-            ctx.lineTo(landmarks[secondJointIndex][0], landmarks[secondJointIndex][1]);
+            ctx.moveTo(
+              landmarks[firstJointIndex][0] * widthCoef,
+              landmarks[firstJointIndex][1] * heightCoef
+            );
+            ctx.lineTo(
+              landmarks[secondJointIndex][0] * widthCoef,
+              landmarks[secondJointIndex][1] * heightCoef
+            );
             ctx.strokeStyle = 'gold';
             ctx.lineWidth = 2;
             ctx.stroke();
@@ -215,10 +190,10 @@ const Camera = ({ reachedFromPage }: ICameraScreenProps) => {
         //loop to landmarks and draw them
         for (let i = 0; i < landmarks.length; i++) {
           //get x point
-          const x = landmarks[i][0];
+          const x = landmarks[i][0] * widthCoef;
 
           //get y point
-          const y = landmarks[i][1];
+          const y = landmarks[i][1] * heightCoef;
 
           //start drawing
           ctx.beginPath();
@@ -231,31 +206,24 @@ const Camera = ({ reachedFromPage }: ICameraScreenProps) => {
       });
     }
   };
-  function debounce(func, timeout = 1500) {
-    let timer;
-    return (...args) => {
-      clearTimeout(timer);
-      timer = setTimeout(() => {
-        func.apply(this, args);
-      }, timeout);
-    };
-  }
 
-  const handleCameraStream = async (images: any, updatePreview: any, gl: any) => {
+  const handleCameraStream = async (images: any) => {
     await prepareTF();
-    console.log('here');
     const loop = async () => {
-      if (net) {
+      if (model) {
         const nextImageTensor = images.next().value;
-        if (nextImageTensor) {
-          debounce(detect(nextImageTensor, net));
-        }
+        if (nextImageTensor) await detect(nextImageTensor, model);
       }
-      requestAnimationFrame(loop);
+      requestAnimationFrameId = requestAnimationFrame(() => {
+        !isCorrectSign && loop();
+      });
     };
-    isCameraActive && net && GE && loop();
+    isCameraActive && model && GE && loop();
   };
-  ///////////////////////////////////////////////
+
+  useEffect(() => {
+    return () => cancelAnimationFrame(requestAnimationFrameId);
+  }, [requestAnimationFrameId]);
 
   if (hasPermission === null) {
     return <View />;
@@ -270,28 +238,27 @@ const Camera = ({ reachedFromPage }: ICameraScreenProps) => {
   return (
     <View style={styles.pageWrapper}>
       <TensorCamera
-        resizeHeight={SCREEN_SIZE.height}
-        resizeWidth={SCREEN_SIZE.width + 100}
+        useCamera2Api={true}
+        useCustomShadersToResize={false}
         resizeDepth={3}
         ref={cameraRef}
         style={styles.cameraComponentContainer}
         onReady={handleCameraStream}
         autorender={true}
         type={cameraType}
-        useCustomShadersToResize={false}
-        cameraTextureWidth={SCREEN_SIZE.width}
-        cameraTextureHeight={SCREEN_SIZE.height}
+        cameraTextureHeight={textureDims.height}
+        cameraTextureWidth={textureDims.width}
+        resizeHeight={tensorDims.height}
+        resizeWidth={tensorDims.width}
       />
       <Canvas ref={canvasRef} style={styles.canvasComponent} />
-      <View style={styles.blinkOverlay} />
+      <View style={[styles.blinkOverlay, { opacity: +shouldOverlay - 0.8 }]} />
       <View style={styles.overlayInfoContainer}>
         <View style={styles.topRowContainer}>
           <BackButton onPress={() => navigation.navigate(ROUTES.root, { screen: ROUTES.home })} />
           <View style={styles.signContainer}>
             <GlassPanel height={160} width={135} style={{}} onPress={handleCameraTypeChange}>
               {/* <Image source={currentSign?.signImage} /> */}
-              {/* {currentSign?.signImage} */}
-              {/* <C_hand /> */}
               <Text>{currentSign?.letter}</Text>
             </GlassPanel>
             {isCorrectSign !== null && (
@@ -342,7 +309,7 @@ const styles = StyleSheet.create({
     zIndex: 10,
     backgroundColor: COLORS.success,
     flex: 0,
-    opacity: 0.2,
+    // opacity: 0.2,
   },
   topRowContainer: {
     flex: 0,
