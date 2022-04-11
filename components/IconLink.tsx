@@ -10,14 +10,12 @@ export interface IIconLinkProps {
   icon?: ICON_TITLES;
   isHeading?: boolean;
   style?: object;
-  key?: number;
   gapSize?: number;
   iconSize?: number;
 }
 
 const IconLink = ({
   linkText,
-  key,
   style,
   iconSize,
   gapSize,
@@ -28,7 +26,6 @@ const IconLink = ({
   return (
     <TouchableHighlight
       onPress={onPress}
-      key={key}
       style={style}
       activeOpacity={1}
       underlayColor={COLORS.menuItemPressed}
