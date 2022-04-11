@@ -29,7 +29,8 @@ const Card = (props: ICardProps) => {
     >
       <View style={styles.cardContainer}>
         <ImageBackground
-          source={image}
+          // source={image}
+          source={require('../assets/images/card-default-pink.png')}
           resizeMode="cover"
           imageStyle={{ borderRadius: 13 }}
           style={styles.cardImage}

@@ -22,13 +22,13 @@ export interface ILinkProps {
 const Link = ({ linkText, preLinkText, isHeading, onPress }: ILinkProps) => {
   return (
     <View style={styles.linkContainer}>
-      {preLinkText && (
-        <View style={styles.preLink}>
-          <Text style={isHeading ? textStyles.heading : textStyles.default}>{preLinkText}</Text>
-        </View>
-      )}
       <TouchableWithoutFeedback style={{}} onPress={onPress}>
-        <Text style={isHeading ? textStyles.headingLink : textStyles.link}>{linkText}</Text>
+        <Text style={isHeading ? textStyles.headingLink : textStyles.link}>
+          <Text
+            style={isHeading ? textStyles.heading : textStyles.default}
+          >{`${preLinkText} `}</Text>
+          {linkText}
+        </Text>
       </TouchableWithoutFeedback>
     </View>
   );
@@ -40,9 +40,6 @@ const styles = StyleSheet.create({
     flexDirection: 'row',
     paddingHorizontal: 15,
     paddingVertical: 15,
-  },
-  preLink: {
-    paddingRight: 5,
   },
 });
 export default Link;
