@@ -18,13 +18,13 @@ import Authorization from '../screens/AutorizationScreen';
 import Camera from '../screens/CameraScreen';
 import { useRecoilValue } from 'recoil';
 import Overlay from '../components/Overlay';
-import { userState } from '../state/atoms';
+import { authorizationState } from '../state/atoms';
 
 export default function Navigation() {
-  const user = useRecoilValue(userState);
+  const authorization = useRecoilValue(authorizationState);
   return (
     <NavigationContainer linking={LinkingConfiguration}>
-      {!user.isAuthorized ? <AuthorizedNavigator /> : <UnAuthorizedNavigator />}
+      {authorization.isAuthorized ? <AuthorizedNavigator /> : <UnAuthorizedNavigator />}
     </NavigationContainer>
   );
 }

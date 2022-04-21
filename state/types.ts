@@ -1,22 +1,18 @@
-export interface IUser {
-  isAuthorized: boolean;
-  email: string;
-  password: string;
-  fullName: string;
-  profileImage: string;
-}
-
 export enum USER_PROPS {
-  isAuthorized = 'isAuthorized',
   email = 'email',
   password = 'password',
   fullName = 'fullName',
   profileImage = 'profileImage',
   confirmPassword = 'confirmPassword',
 }
+export interface IUser {
+  email: string;
+  password: string;
+  fullName: string;
+  profileImage: string;
+}
 
 export const userDefault: IUser = {
-  isAuthorized: false,
   email: '',
   password: '',
   fullName: '',
@@ -31,4 +27,12 @@ export interface IScreen {
 export const screenDefault: IScreen = {
   isLoading: false,
   isOverlay: false,
+};
+
+export interface IAuthorization {
+  isAuthorized: boolean;
+}
+
+export const authorizationDefault: IAuthorization = {
+  isAuthorized: false,
 };

@@ -8,8 +8,8 @@ import { textStyles } from '../constants/TextStyle';
 import { ImagePickerResult, launchImageLibraryAsync, MediaTypeOptions } from 'expo-image-picker';
 import React, { ReactElement, useState } from 'react';
 import { useRecoilState, useResetRecoilState, useSetRecoilState } from 'recoil';
-import { screenState, userState } from '../state/atoms';
-import { IScreen, IUser, userDefault, USER_PROPS } from '../state/types';
+import { authorizationState, screenState, userState } from '../state/atoms';
+import { IAuthorization, IScreen, IUser, userDefault, USER_PROPS } from '../state/types';
 import ModalScreen from './ModalScreen';
 import IconLink from '../components/IconLink';
 import GradientButton from '../components/Buttons/GradientButton';
@@ -24,6 +24,7 @@ const Profile = () => {
   const removeUser = useResetRecoilState(userState);
   const [user, setUser] = useRecoilState(userState);
   const setScreen = useSetRecoilState(screenState);
+  const setAuthorization = useSetRecoilState(authorizationState);
   const [modalVisible, setModalVisible] = useState(false);
 
   let inputValues = userDefault;
@@ -77,6 +78,14 @@ const Profile = () => {
     };
   };
 
+  const handleLogOut = (): void => {
+    setAuthorization((prev: IAuthorization) => ({
+      ...prev,
+      isAuthorized: false,
+    }));
+    removeUser();
+  };
+
   const profileOptions: IMenuItemProps[] = [
     {
       title: 'Clean my progress',
@@ -91,7 +100,7 @@ const Profile = () => {
     {
       title: 'Log out',
       icon: ICON_TITLES.logOut,
-      onPress: removeUser,
+      onPress: handleLogOut,
     },
   ];
 

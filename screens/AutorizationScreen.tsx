@@ -6,8 +6,8 @@ import GradientButton from '../components/Buttons/GradientButton';
 import Link from '../components/Link';
 import { useEffect, useState } from 'react';
 import { useSetRecoilState } from 'recoil';
-import { userState } from '../state/atoms';
-import { IUser, USER_PROPS } from '../state/types';
+import { authorizationState, userState } from '../state/atoms';
+import { IAuthorization, IUser, USER_PROPS } from '../state/types';
 
 enum AUTH_ERROR {
   passwordMatch = "Passwords don't match!",
@@ -57,6 +57,7 @@ const Authorization = () => {
   const [pageTypeProps, setPageTypeProps] = useState<IPageProps>(pageProps.login);
   const [inputValues, setInputValues] = useState<IUserRegisterInput>(userDefaultInputsValues);
   const setUser = useSetRecoilState(userState);
+  const setAuthorization = useSetRecoilState(authorizationState);
   const [error, setError] = useState<AUTH_ERROR | null>(null);
 
   useEffect(() => {
@@ -93,9 +94,12 @@ const Authorization = () => {
     ).includes('') && setError(AUTH_ERROR.emptyFields);
     setUser((prev: IUser) => ({
       ...prev,
-      isAuthorized: true,
       fullName: 'Danna Paola',
       email: 'dannapaola@gmail.com',
+    }));
+    setAuthorization((prev: IAuthorization) => ({
+      ...prev,
+      isAuthorized: true,
     }));
     //todo auth user logic
   };
