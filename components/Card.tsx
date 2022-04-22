@@ -3,17 +3,8 @@ import { COLORS } from '../constants/Colors';
 import { FONT_TYPES } from '../constants/Enums';
 import { ROUTES } from '../navigation/routes';
 import { useNavigation } from '@react-navigation/native';
+import { EXERCISE_TYPE, getCardImage, ICardProps, TRANSLATION_TYPE } from '../constants/Cards';
 
-export enum CARD_TYPE {
-  signsToText = 'Signs learning',
-  textToSign = 'Signs translating',
-}
-export interface ICardProps {
-  title: string;
-  image: string;
-  type: CARD_TYPE;
-  minutesLimit?: number;
-}
 const image = {
   uri: 'https://i.stack.imgur.com/l60Hf.png',
 };
@@ -29,8 +20,7 @@ const Card = (props: ICardProps) => {
     >
       <View style={styles.cardContainer}>
         <ImageBackground
-          // source={image}
-          source={require('../assets/images/card-default-pink.png')}
+          source={getCardImage(props)}
           resizeMode="cover"
           imageStyle={{ borderRadius: 13 }}
           style={styles.cardImage}

@@ -1,4 +1,5 @@
 declare module '*.svg';
+declare module '*png';
 // {
 //   import React, { ReactElement, SVGProps } from 'react';
 //   import { SvgProps } from 'react-native-svg';

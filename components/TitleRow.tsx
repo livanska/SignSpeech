@@ -2,7 +2,7 @@ import CardCarousel from './CardCarousel';
 import { textStyles } from '../constants/TextStyle';
 import { StyleSheet, Text, View } from 'react-native';
 import { SCREEN_SIZE } from '../constants/Layout';
-import { ICardProps } from './Card';
+import { ICardProps } from '../constants/Cards';
 export interface ITitleRowProps {
   title: string;
   subtitle?: string;

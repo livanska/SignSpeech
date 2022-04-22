@@ -1,6 +1,6 @@
 import { ScrollView, StyleSheet, View } from 'react-native';
 import TitleRow from '../components/TitleRow';
-import { CARD_TYPE } from '../components/Card';
+import { EXERCISE_TYPE, LEVEL, TIME_LIMIT, TRANSLATION_TYPE } from '../constants/Cards';
 import { COLORS } from '../constants/Colors';
 import Link, { ILinkProps } from '../components/Link';
 import { useNavigation } from '@react-navigation/core';
@@ -8,18 +8,54 @@ import { ROUTES } from '../navigation/routes';
 export const items = [
   {
     title: 'Sign Learning',
-    image: 'https://pbs.twimg.com/profile_images/486929358120964097/gNLINY67_400x400.png',
-    type: CARD_TYPE.signsToText,
+    translation: TRANSLATION_TYPE.signsToText,
+    exerciseType: EXERCISE_TYPE.SpeedTest,
+    timeLimit: TIME_LIMIT.min3,
   },
   {
     title: 'Sign Learning',
-    image: 'https://pbs.twimg.com/profile_images/486929358120964097/gNLINY67_400x400.png',
-    type: CARD_TYPE.signsToText,
+    translation: TRANSLATION_TYPE.signsToText,
+    exerciseType: EXERCISE_TYPE.SpeedTest,
+    timeLimit: TIME_LIMIT.min5,
   },
   {
     title: 'Sign Learning',
-    image: 'https://pbs.twimg.com/profile_images/486929358120964097/gNLINY67_400x400.png',
-    type: CARD_TYPE.signsToText,
+    translation: TRANSLATION_TYPE.signsToText,
+    exerciseType: EXERCISE_TYPE.SpeedTest,
+    timeLimit: TIME_LIMIT.min7,
+  },
+  {
+    title: 'Sign Learning',
+    translation: TRANSLATION_TYPE.signsToText,
+    exerciseType: EXERCISE_TYPE.SpeedTest,
+    timeLimit: TIME_LIMIT.min10,
+  },
+  {
+    title: 'Sign Learning',
+    translation: TRANSLATION_TYPE.signsToText,
+    exerciseType: EXERCISE_TYPE.SpeedTest,
+    timeLimit: TIME_LIMIT.min15,
+  },
+];
+
+export const itemsStep = [
+  {
+    title: 'Sign Learning',
+    translation: TRANSLATION_TYPE.signsToText,
+    exerciseType: EXERCISE_TYPE.StepByStep,
+    level: LEVEL.easy,
+  },
+  {
+    title: 'Sign Learning',
+    translation: TRANSLATION_TYPE.signsToText,
+    exerciseType: EXERCISE_TYPE.StepByStep,
+    level: LEVEL.medium,
+  },
+  {
+    title: 'Sign Learning',
+    translation: TRANSLATION_TYPE.signsToText,
+    exerciseType: EXERCISE_TYPE.StepByStep,
+    level: LEVEL.hard,
   },
 ];
 const rowMockSpeedTest = {
@@ -35,7 +71,7 @@ const rowMockDailyChallenge = {
 const rowMockStepByStep = {
   title: 'Step By Step',
   subtitle: 'Start training from the easiest letters to the hardest ones',
-  items: items,
+  items: itemsStep,
 };
 // const linkData: Partial<ILinkProps> = {
 //   isHeading: true,
