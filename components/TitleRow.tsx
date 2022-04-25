@@ -8,6 +8,7 @@ export interface ITitleRowProps {
   subtitle?: string;
   items: ICardProps[];
 }
+
 const TitleRow = ({ items, title, subtitle }: ITitleRowProps) => {
   return (
     <View style={styles.row}>

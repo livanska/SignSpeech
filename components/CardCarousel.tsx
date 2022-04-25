@@ -1,11 +1,20 @@
 import { View } from 'react-native';
 import Carousel from 'react-native-snap-carousel';
-import Card, { ICardProps } from './Card';
+import Card from './Card';
 import { SCREEN_SIZE } from '../constants/Layout';
+import { CARD_TYPE, ICardProps, IExerciseCardProps, IVideoCardProps } from '../constants/Cards';
+import VideoCard from './VideoCard';
 export interface ICardCarouselProps {
   items: ICardProps[];
 }
-const _renderItem = ({ item }: { item: ICardProps; index: number }) => <Card {...item}></Card>;
+
+const _renderItem = ({ item }: { item: ICardProps; index: number }) => {
+  return item.type === CARD_TYPE.video ? (
+    <VideoCard {...(item as IVideoCardProps)} />
+  ) : (
+    <Card {...(item as IExerciseCardProps)} />
+  );
+};
 
 const CardCarousel = ({ items }: ICardCarouselProps) => {
   return (

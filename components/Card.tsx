@@ -3,13 +3,9 @@ import { COLORS } from '../constants/Colors';
 import { FONT_TYPES } from '../constants/Enums';
 import { ROUTES } from '../navigation/routes';
 import { useNavigation } from '@react-navigation/native';
-import { EXERCISE_TYPE, getCardImage, ICardProps, TRANSLATION_TYPE } from '../constants/Cards';
+import { getCardImage, IExerciseCardProps } from '../constants/Cards';
 
-const image = {
-  uri: 'https://i.stack.imgur.com/l60Hf.png',
-};
-
-const Card = (props: ICardProps) => {
+const Card = (props: IExerciseCardProps) => {
   const navigation = useNavigation();
   return (
     <TouchableHighlight

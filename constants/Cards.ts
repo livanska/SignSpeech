@@ -9,12 +9,24 @@ import mediumImg from '../assets/images/level-card-medium.png';
 import hardImg from '../assets/images/level-card-hard.png';
 
 export interface ICardProps {
+  type: CARD_TYPE;
+}
+export interface IExerciseCardProps extends ICardProps {
   title: string;
   image?: string;
   translation: TRANSLATION_TYPE;
   exerciseType: EXERCISE_TYPE;
   timeLimit?: TIME_LIMIT;
   level?: LEVEL;
+}
+
+export interface IVideoCardProps extends ICardProps {
+  videoId: string;
+}
+
+export enum CARD_TYPE {
+  exercise = 'exercise',
+  video = 'video',
 }
 
 export enum EXERCISE_TYPE {
@@ -57,7 +69,7 @@ export enum LEVEL_CARD_IMAGE {
   hard = hardImg,
 }
 
-export const getCardImage = ({ exerciseType, ...params }: ICardProps): CARD_IMAGE => {
+export const getCardImage = ({ exerciseType, ...params }: IExerciseCardProps): CARD_IMAGE => {
   switch (exerciseType) {
     case EXERCISE_TYPE.SpeedTest:
       return SPEED_CARD_IMAGE[TIME_LIMIT[params.timeLimit]];
@@ -67,3 +79,5 @@ export const getCardImage = ({ exerciseType, ...params }: ICardProps): CARD_IMAG
       return defaultImg;
   }
 };
+
+export const DEFAULT_VIDEO_CARD_LINK = 'https://www.youtube.com/embed/';
