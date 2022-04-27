@@ -8,6 +8,7 @@ import { useEffect, useState } from 'react';
 import { useSetRecoilState } from 'recoil';
 import { authorizationState, userState } from '../state/atoms';
 import { IAuthorization, IUser, USER_PROPS } from '../state/types';
+import { getAuth, createUserWithEmailAndPassword, signInWithEmailAndPassword } from 'firebase/auth';
 
 enum AUTH_ERROR {
   passwordMatch = "Passwords don't match!",
@@ -59,6 +60,7 @@ const Authorization = () => {
   const setUser = useSetRecoilState(userState);
   const setAuthorization = useSetRecoilState(authorizationState);
   const [error, setError] = useState<AUTH_ERROR | null>(null);
+  const auth = getAuth();
 
   useEffect(() => {
     setPageTypeProps(pageProps[pageType]);
@@ -88,20 +90,34 @@ const Authorization = () => {
     } else setError(null);
   };
 
-  const handleAuth = (): void => {
-    Object.values(
-      isLogin() ? (inputValues as IUserInput) : (inputValues as IUserRegisterInput)
-    ).includes('') && setError(AUTH_ERROR.emptyFields);
-    setUser((prev: IUser) => ({
-      ...prev,
-      fullName: 'Danna Paola',
-      email: 'dannapaola@gmail.com',
-    }));
-    setAuthorization((prev: IAuthorization) => ({
-      ...prev,
-      isAuthorized: true,
-    }));
-    //todo auth user logic
+  const handleAuth = async (): Promise<void> => {
+    isLogin() &&
+      inputValues.hasOwnProperty(USER_PROPS.confirmPassword) &&
+      delete inputValues.confirmPassword;
+
+    if (Object.values(inputValues).includes('')) {
+      console.log(inputValues);
+      setError(AUTH_ERROR.emptyFields);
+      return;
+    }
+
+    const { email, password }: IUserInput = inputValues;
+    const authorize = isLogin() ? signInWithEmailAndPassword : createUserWithEmailAndPassword;
+
+    try {
+      await authorize(auth, email, password);
+      setUser((prev: IUser) => ({
+        ...prev,
+        fullName: 'Danna Paola',
+        email: 'dannapaola@gmail.com',
+      }));
+      setAuthorization((prev: IAuthorization) => ({
+        ...prev,
+        isAuthorized: true,
+      }));
+    } catch (error) {
+      setError(AUTH_ERROR.incorrectData);
+    }
   };
 
   return (

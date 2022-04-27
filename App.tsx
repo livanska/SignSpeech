@@ -3,6 +3,7 @@ import { SafeAreaProvider } from 'react-native-safe-area-context';
 import { RecoilRoot } from 'recoil';
 import useCachedResources from './hooks/useCachedResources';
 import Navigation from './navigation/Navigation';
+import './config/firebase';
 
 export default function App() {
   const isLoadingComplete = useCachedResources();
