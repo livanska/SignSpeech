@@ -172,9 +172,9 @@ const Profile = () => {
         </View>
         <View style={styles.textContainer}>
           <View style={styles.fullNameContainer}>
-            <Text style={textStyles.heading}>{user.fullName || mockUser.fullName}</Text>
+            <Text style={textStyles.heading}>{user.fullName}</Text>
           </View>
-          <Text style={textStyles.subtitle}>{user.email || mockUser.email}</Text>
+          <Text style={textStyles.subtitle}>{user.email}</Text>
         </View>
       </View>
       <Menu items={profileOptions} />

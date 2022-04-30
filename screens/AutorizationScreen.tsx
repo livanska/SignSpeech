@@ -8,7 +8,7 @@ import { useEffect, useState } from 'react';
 import { useSetRecoilState } from 'recoil';
 import { authorizationState, userState } from '../state/atoms';
 import { IAuthorization, IUser, USER_PROPS } from '../state/types';
-import { getAuth, createUserWithEmailAndPassword, signInWithEmailAndPassword } from 'firebase/auth';
+import { authorizeUser } from '../firebase/user';
 
 enum AUTH_ERROR {
   passwordMatch = "Passwords don't match!",
@@ -26,7 +26,7 @@ interface IPageProps {
   linkText: string;
   buttonTitle: string;
 }
-interface IUserInput {
+export interface IUserInput {
   email: string;
   password: string;
 }
@@ -60,7 +60,6 @@ const Authorization = () => {
   const setUser = useSetRecoilState(userState);
   const setAuthorization = useSetRecoilState(authorizationState);
   const [error, setError] = useState<AUTH_ERROR | null>(null);
-  const auth = getAuth();
 
   useEffect(() => {
     setPageTypeProps(pageProps[pageType]);
@@ -96,21 +95,17 @@ const Authorization = () => {
       delete inputValues.confirmPassword;
 
     if (Object.values(inputValues).includes('')) {
-      console.log(inputValues);
       setError(AUTH_ERROR.emptyFields);
       return;
     }
 
-    const { email, password }: IUserInput = inputValues;
-    const authorize = isLogin() ? signInWithEmailAndPassword : createUserWithEmailAndPassword;
-
     try {
-      await authorize(auth, email, password);
+      const userProfile = await authorizeUser(isLogin(), inputValues);
       setUser((prev: IUser) => ({
         ...prev,
-        fullName: 'Danna Paola',
-        email: 'dannapaola@gmail.com',
+        ...userProfile,
       }));
+
       setAuthorization((prev: IAuthorization) => ({
         ...prev,
         isAuthorized: true,
