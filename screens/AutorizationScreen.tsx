@@ -15,6 +15,7 @@ enum AUTH_ERROR {
   emptyFields = 'Fill in all the fields!',
   invalidEmail = 'Provide valid email address!',
   incorrectData = 'Incorrect email address or password, please try again.',
+  serverError = 'Something went wrong, please try again later.',
 }
 
 enum AUTH_PAGE_TYPE {
@@ -30,14 +31,16 @@ export interface IUserInput {
   email: string;
   password: string;
 }
-interface IUserRegisterInput extends IUserInput {
+export interface IUserRegisterInput extends IUserInput {
   confirmPassword: string;
+  fullName: string;
 }
 
 const userDefaultInputsValues: IUserRegisterInput = {
   email: '',
   password: '',
   confirmPassword: '',
+  fullName: '',
 };
 
 const pageProps = {
@@ -90,9 +93,10 @@ const Authorization = () => {
   };
 
   const handleAuth = async (): Promise<void> => {
-    isLogin() &&
-      inputValues.hasOwnProperty(USER_PROPS.confirmPassword) &&
+    if (isLogin()) {
       delete inputValues.confirmPassword;
+      delete inputValues.fullName;
+    }
 
     if (Object.values(inputValues).includes('')) {
       setError(AUTH_ERROR.emptyFields);
@@ -101,15 +105,19 @@ const Authorization = () => {
 
     try {
       const userProfile = await authorizeUser(isLogin(), inputValues);
-      setUser((prev: IUser) => ({
-        ...prev,
-        ...userProfile,
-      }));
+      if (userProfile) {
+        setUser((prev: IUser) => ({
+          ...prev,
+          ...userProfile,
+        }));
 
-      setAuthorization((prev: IAuthorization) => ({
-        ...prev,
-        isAuthorized: true,
-      }));
+        setAuthorization((prev: IAuthorization) => ({
+          ...prev,
+          isAuthorized: true,
+        }));
+      } else {
+        setError(AUTH_ERROR.serverError);
+      }
     } catch (error) {
       setError(AUTH_ERROR.incorrectData);
     }
@@ -134,6 +142,17 @@ const Authorization = () => {
             onChangeText={(input) => handleInputChange(input, USER_PROPS.email)}
             value={inputValues.email}
           ></TextInput>
+          {pageType === AUTH_PAGE_TYPE.register && (
+            <TextInput
+              style={textStyles.input}
+              keyboardAppearance={'light'}
+              placeholderTextColor={COLORS.lightText}
+              secureTextEntry={true}
+              placeholder="Full Name"
+              value={inputValues.fullName}
+              onChangeText={(input: string) => handleInputChange(input, USER_PROPS.fullName)}
+            ></TextInput>
+          )}
           <TextInput
             style={textStyles.input}
             keyboardAppearance={'light'}

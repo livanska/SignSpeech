@@ -5,7 +5,12 @@ import Menu, { IMenuItemProps } from '../components/Menu';
 import { COLORS } from '../constants/Colors';
 import { ICON_TITLES } from '../constants/Enums';
 import { textStyles } from '../constants/TextStyle';
-import { ImagePickerResult, launchImageLibraryAsync, MediaTypeOptions } from 'expo-image-picker';
+import {
+  ImageInfo,
+  ImagePickerResult,
+  launchImageLibraryAsync,
+  MediaTypeOptions,
+} from 'expo-image-picker';
 import React, { ReactElement, useState } from 'react';
 import { useRecoilState, useResetRecoilState, useSetRecoilState } from 'recoil';
 import { authorizationState, screenState, userState } from '../state/atoms';
@@ -13,12 +18,8 @@ import { IAuthorization, IScreen, IUser, userDefault, USER_PROPS } from '../stat
 import ModalScreen from './ModalScreen';
 import IconLink from '../components/IconLink';
 import GradientButton from '../components/Buttons/GradientButton';
-
-const mockUser = {
-  image: 'https://i.stack.imgur.com/l60Hf.png',
-  fullName: 'Lilia Ivanska',
-  email: 'liliaivanska@gmail.com',
-};
+import { logOutUser, updateUser, uploadUserPhoto } from '../firebase/user';
+import ImageData from 'react-native-canvas/dist/ImageData';
 
 const Profile = () => {
   const removeUser = useResetRecoilState(userState);
@@ -27,7 +28,7 @@ const Profile = () => {
   const setAuthorization = useSetRecoilState(authorizationState);
   const [modalVisible, setModalVisible] = useState(false);
 
-  let inputValues = userDefault;
+  let inputValues: IUser;
 
   const changeImage = async () => {
     let result: ImagePickerResult = await launchImageLibraryAsync({
@@ -36,7 +37,12 @@ const Profile = () => {
       aspect: [1, 1],
       quality: 1,
     });
-    !result.cancelled && handleUserChange(result.uri, USER_PROPS.profileImage);
+
+    if (result && !result.cancelled) {
+      const image = result as ImageInfo;
+      handleUserChange(image.uri, USER_PROPS.profileImage);
+      await uploadUserPhoto(image);
+    }
   };
 
   const handleUserChange = (input: string, valuePropName: string): void => {
@@ -61,12 +67,18 @@ const Profile = () => {
     }));
   };
 
-  const saveUser = (): void => {
+  const saveUser = async (): Promise<void> => {
+    for (let propName in inputValues) {
+      if (!inputValues[propName]) delete inputValues[propName];
+      else {
+        if (user[propName] !== inputValues[propName])
+          await updateUser(USER_PROPS[propName], inputValues[propName]);
+      }
+    }
     setUser((prev: IUser) => ({
       ...prev,
       ...inputValues,
     }));
-    //saving logic here
     setModalVisible(false);
     closeModal();
   };
@@ -78,12 +90,13 @@ const Profile = () => {
     };
   };
 
-  const handleLogOut = (): void => {
+  const handleLogOut = async (): Promise<void> => {
     setAuthorization((prev: IAuthorization) => ({
       ...prev,
       isAuthorized: false,
     }));
     removeUser();
+    await logOutUser();
   };
 
   const profileOptions: IMenuItemProps[] = [
@@ -127,18 +140,17 @@ const Profile = () => {
             ></TextInput>
             <View style={styles.separator} />
             <View style={styles.modalTextContainer}>
-              <Text style={textStyles.aboveInputHeader}>Password</Text>
+              <Text style={textStyles.aboveInputHeader}>Email</Text>
             </View>
             <TextInput
               style={textStyles.input}
               keyboardAppearance={'light'}
-              textContentType={'password'}
+              textContentType={'emailAddress'}
               returnKeyType={'done'}
               placeholderTextColor={COLORS.lightText}
-              secureTextEntry={true}
-              placeholder="Password"
-              defaultValue={user.password}
-              onChangeText={(input: string) => handleInputChange(input, USER_PROPS.password)}
+              placeholder="Email"
+              defaultValue={user.email}
+              onChangeText={(input: string) => handleInputChange(input, USER_PROPS.email)}
             ></TextInput>
           </View>
           <View style={styles.buttonsRow}>
@@ -149,7 +161,7 @@ const Profile = () => {
               gapSize={2}
               iconSize={28}
             />
-            <GradientButton title="Save" onPress={saveUser} />
+            <GradientButton title="Save" onPress={async () => await saveUser()} />
           </View>
         </View>
       </ModalScreen>
