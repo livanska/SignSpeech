@@ -32,7 +32,7 @@ const Camera = ({ reachedFromPage }: ICameraScreenProps) => {
   const navigation = useNavigation();
   const [isCameraActive, setIsCameraActive] = useState<boolean>(false);
   const [hasPermission, setHasPermission] = useState<boolean | null>(null);
-  const [cameraType, setCameraType] = useState<CameraType>(Constants.Type.back);
+  const [cameraType, setCameraType] = useState<CameraType>(CameraType.back);
   const [currentSign, setCurrentSign] = useState<ISign>(null);
   const [predictedSigns, setPredictedSigns] = useState<string[]>(null);
   const [isCorrectSign, setIsCorrectSign] = useState<boolean | null>(null);
@@ -233,7 +233,7 @@ const Camera = ({ reachedFromPage }: ICameraScreenProps) => {
   }
 
   const handleCameraTypeChange = (): void =>
-    setCameraType(cameraType === Constants.Type.back ? Constants.Type.front : Constants.Type.back);
+    setCameraType(cameraType === CameraType.back ? CameraType.front : CameraType.back);
 
   return (
     <View style={styles.pageWrapper}>

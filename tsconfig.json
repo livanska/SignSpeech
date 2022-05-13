@@ -5,6 +5,7 @@
   },
   "include": [
     "typings.d.ts",
+    "env.d.ts",
     "handimage/custom.d.ts"
   ]
 }
