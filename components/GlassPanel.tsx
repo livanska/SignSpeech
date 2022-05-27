@@ -5,7 +5,7 @@ import { COLORS } from '../constants/Colors';
 export interface IGlassPanelProps {
   width: number;
   height: number;
-  children?: ReactElement;
+  children?: ReactElement | ReactElement[];
   style?: object;
   onPress?(): void;
 }

@@ -19,6 +19,7 @@ import Camera from '../screens/CameraScreen';
 import { useRecoilValue } from 'recoil';
 import Overlay from '../components/Overlay';
 import { authorizationState } from '../state/atoms';
+import ResultScreen from '../screens/ResultScreen';
 
 export default function Navigation() {
   const authorization = useRecoilValue(authorizationState);
@@ -37,6 +38,7 @@ function AuthorizedNavigator() {
       <Overlay />
       <Stack.Navigator>
         <Stack.Screen name="Root" component={BottomTabNavigator} options={{ headerShown: false }} />
+        <Stack.Screen name="Result" component={ResultScreen} options={{ headerShown: false }} />
         <Stack.Screen name="NotFound" component={NotFoundScreen} options={{ title: 'Oops!' }} />
       </Stack.Navigator>
     </>
@@ -57,7 +59,8 @@ function UnAuthorizedNavigator() {
 
 const BottomTab = createBottomTabNavigator<RootTabParamList>();
 
-const LearningCamera = () => <Camera reachedFromPage={ROUTES.learning} />;
+// const LearningCamera = () => <Camera />;
+// const TranslateCamera = () => <Camera />;
 
 function BottomTabNavigator() {
   return (
@@ -79,40 +82,44 @@ function BottomTabNavigator() {
       <BottomTab.Screen
         name={ROUTES.home}
         component={HomeScreen}
-        options={({ navigation }: RootTabScreenProps<`${ROUTES.home}`>) => ({
+        options={({ navigation, route }: RootTabScreenProps<`${ROUTES.home}`>) => ({
           tabBarIcon: ({ color }) => <TabBarIcon name={ICON_TITLES.home} color={color} />,
-          headerRight: () => (
-            <Pressable
-              onPress={() => navigation.navigate('Modal')}
-              style={({ pressed }) => ({
-                opacity: pressed ? 0.5 : 1,
-              })}
-            >
-              <FontAwesome
-                name="info-circle"
-                size={25}
-                color={COLORS.mainText}
-                style={{ marginRight: 15 }}
-              />
-            </Pressable>
-          ),
+          // headerRight: () => (
+          //   <Pressable
+          //     onPress={() => navigation.navigate('Modal')}
+          //     style={({ pressed }) => ({
+          //       opacity: pressed ? 0.5 : 1,
+          //     })}
+          //   >
+          //     <FontAwesome
+          //       name="info-circle"
+          //       size={25}
+          //       color={COLORS.mainText}
+          //       style={{ marginRight: 15 }}
+          //     />
+          //   </Pressable>
+          // ),
         })}
       />
       <BottomTab.Screen
         name={ROUTES.learning}
-        component={LearningCamera}
-        options={{
+        component={Camera}
+        options={({ navigation, route }: RootTabScreenProps<`${ROUTES.learning}`>) => ({
+          navigation,
+          route,
           tabBarStyle: { display: 'none' },
           tabBarIcon: ({ color }) => <TabBarIcon name={ICON_TITLES.learning} color={color} />,
-        }}
+        })}
       />
       <BottomTab.Screen
         name={ROUTES.translate}
-        component={LearningCamera}
-        options={{
+        component={Camera}
+        options={({ navigation, route }: RootTabScreenProps<`${ROUTES.translate}`>) => ({
+          navigation,
+          route,
           tabBarStyle: { display: 'none' },
           tabBarIcon: ({ color }) => <TabBarIcon name={ICON_TITLES.translate} color={color} />,
-        }}
+        })}
       />
       <BottomTab.Screen
         name={ROUTES.profile}

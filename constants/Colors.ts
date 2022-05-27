@@ -11,6 +11,7 @@ export enum COLORS {
   black = '#000',
   lightBlue = '#EEF3F5',
   menuItemPressed = '#F2F2F2',
+  medium = '#F6C23A',
   transparent = 'transparent',
 }
 export const GRADIENTS = {

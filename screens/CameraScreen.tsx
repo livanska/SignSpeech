@@ -2,7 +2,7 @@ import { useNavigation } from '@react-navigation/native';
 import { Camera as CameraComponent, requestCameraPermissionsAsync, Constants } from 'expo-camera';
 import { CameraType } from 'expo-camera/build/Camera.types';
 import React, { useEffect, useRef, useState } from 'react';
-import { View, Text, StyleSheet, Platform } from 'react-native';
+import { View, Text, StyleSheet, Platform, Image } from 'react-native';
 import BackButton from '../components/Buttons/BackButton';
 import GlassPanel from '../components/GlassPanel';
 import Icon from '../components/Icon';
@@ -17,27 +17,47 @@ import { cameraWithTensors } from '@tensorflow/tfjs-react-native';
 import { ISign, Signs } from '../handimage';
 import Handsigns from '../handsigns';
 import Canvas from 'react-native-canvas';
-import { useIsFocused } from '@react-navigation/core';
+import { useIsFocused, useNavigationState } from '@react-navigation/core';
 import { COLORS } from '../constants/Colors';
-
+import { CARD_TYPE, LEVEL, TIME_LIMIT } from '../constants/Cards';
+import { IResultScreenProps } from './ResultScreen';
+import SvgUri from 'react-native-svg-uri';
+import N_hand from './../handimage/Nhand.svg';
 export interface ICameraScreenProps {
   reachedFromPage: ROUTES.home | ROUTES.learning | ROUTES.translate;
-  timeLimit?: number;
+  exerciseOptions?: IExerciseOptions;
+}
+export interface IExerciseOptions {
+  timeLimit?: TIME_LIMIT;
+  level?: LEVEL;
+}
+
+enum CameraMode {
+  back = 1,
+  front = 2,
 }
 
 const TensorCamera = cameraWithTensors(CameraComponent);
 
-const Camera = ({ reachedFromPage }: ICameraScreenProps) => {
+const Camera = ({ route }) => {
+  const { reachedFromPage, exerciseOptions }: ICameraScreenProps = route.params;
   let requestAnimationFrameId = 0;
   const navigation = useNavigation();
+  const [timerValue, setTimerValue] = useState<number | null>(null);
   const [isCameraActive, setIsCameraActive] = useState<boolean>(false);
   const [hasPermission, setHasPermission] = useState<boolean | null>(null);
-  const [cameraType, setCameraType] = useState<CameraType>(CameraType.back);
+  const [cameraType, setCameraType] = useState<CameraMode>(CameraMode.front);
   const [currentSign, setCurrentSign] = useState<ISign>(null);
   const [predictedSigns, setPredictedSigns] = useState<string[]>(null);
   const [isCorrectSign, setIsCorrectSign] = useState<boolean | null>(null);
   const [shouldOverlay, setShouldOverlay] = useState<boolean | null>(false);
+  const [isBack, setIsBack] = useState<boolean>(false);
+  const [result, setResult] = useState<IResultScreenProps>({
+    allAmount: (exerciseOptions?.timeLimit * 2) | 0,
+    allCorrectAmount: 0,
+  });
   const isFocusedScreen: boolean = useIsFocused();
+
   let cameraRef = useRef(null);
   const canvasRef = useRef(null);
   let model: any;
@@ -63,6 +83,13 @@ const Camera = ({ reachedFromPage }: ICameraScreenProps) => {
           setHasPermission(status === 'granted');
         }
         setIsCameraActive(true);
+
+        if (exerciseOptions?.timeLimit) {
+          setTimerValue(null);
+          setIsBack(false);
+          setResult({ allAmount: (exerciseOptions?.timeLimit * 2) | 0, allCorrectAmount: 0 });
+        }
+
         await tf.ready().then(() => {
           tf.ENV.set('WEBGL_CONV_IM2COL', false);
           setRandomSign();
@@ -71,6 +98,7 @@ const Camera = ({ reachedFromPage }: ICameraScreenProps) => {
         });
       } else {
         cameraRef = null;
+        setTimerValue(0);
         setIsCameraActive(false);
       }
     })();
@@ -117,6 +145,10 @@ const Camera = ({ reachedFromPage }: ICameraScreenProps) => {
     else {
       if (predictedSigns?.includes(currentSign?.letter)) {
         setIsCorrectSign(true);
+        setResult((prev: IResultScreenProps) => ({
+          allCorrectAmount: prev.allCorrectAmount++,
+          ...prev,
+        }));
         setShouldOverlay(true);
         setTimeout(() => {
           setRandomSign();
@@ -126,6 +158,24 @@ const Camera = ({ reachedFromPage }: ICameraScreenProps) => {
       } else setIsCorrectSign(false);
     }
   }, [predictedSigns, currentSign]);
+
+  useEffect(() => {
+    console.log(timerValue, result);
+    if (timerValue === 0 && result.allAmount > 0 && !isBack) {
+      navigation.navigate(ROUTES.result, result);
+      setTimerValue(null);
+      return;
+    }
+    if (!timerValue) {
+      return;
+    }
+
+    const timer = setInterval(() => {
+      setTimerValue(timerValue - 1);
+    }, 1000);
+
+    return () => clearTimeout(timer);
+  }, [timerValue]);
 
   const setRandomSign = () => setCurrentSign(Signs[Math.floor(Math.random() * Signs.length)]);
 
@@ -209,6 +259,8 @@ const Camera = ({ reachedFromPage }: ICameraScreenProps) => {
 
   const handleCameraStream = async (images: any) => {
     await prepareTF();
+    // Add loading state
+    setTimerValue(exerciseOptions?.timeLimit * 2);
     const loop = async () => {
       if (model) {
         const nextImageTensor = images.next().value;
@@ -233,12 +285,15 @@ const Camera = ({ reachedFromPage }: ICameraScreenProps) => {
   }
 
   const handleCameraTypeChange = (): void =>
-    setCameraType(cameraType === CameraType.back ? CameraType.front : CameraType.back);
+    setCameraType(cameraType === CameraMode.back ? CameraMode.front : CameraMode.back);
 
+  const toTimeString = (seconds: number): string =>
+    (seconds - (seconds %= 60)) / 60 + (9 < seconds ? ':' : ':0') + seconds;
+
+  const SignImage = currentSign?.signImage;
   return (
     <View style={styles.pageWrapper}>
       <TensorCamera
-        useCamera2Api={true}
         useCustomShadersToResize={false}
         resizeDepth={3}
         ref={cameraRef}
@@ -255,11 +310,26 @@ const Camera = ({ reachedFromPage }: ICameraScreenProps) => {
       <View style={[styles.blinkOverlay, { opacity: +shouldOverlay - 0.8 }]} />
       <View style={styles.overlayInfoContainer}>
         <View style={styles.topRowContainer}>
-          <BackButton onPress={() => navigation.navigate(ROUTES.root, { screen: ROUTES.home })} />
+          <BackButton
+            onPress={() => {
+              setIsBack(true);
+              navigation.navigate(ROUTES.root, { screen: ROUTES.home });
+            }}
+          />
+          {timerValue !== null && (
+            <GlassPanel height={160} width={135} style={{}}>
+              <Text>{toTimeString(timerValue)}</Text>
+            </GlassPanel>
+          )}
           <View style={styles.signContainer}>
             <GlassPanel height={160} width={135} style={{}} onPress={handleCameraTypeChange}>
-              {/* <Image source={currentSign?.signImage} /> */}
-              <Text>{currentSign?.letter}</Text>
+              <View style={styles.glassPanelContent}>
+                {/* Should be */}
+                {/* {reachedFromPage === ROUTES.learning && currentSign?.signImage && <SignImage />} */}
+                {/* Testing only */}
+                {currentSign?.signImage && <SignImage />}
+                <Text>{currentSign?.letter}</Text>
+              </View>
             </GlassPanel>
             {isCorrectSign !== null && (
               <StatusCircle style={styles.statusCircle} isSuccess={isCorrectSign} />
@@ -324,6 +394,11 @@ const styles = StyleSheet.create({
   signContainer: {
     flexDirection: 'column',
     alignItems: 'center',
+  },
+  glassPanelContent: {
+    // flexDirection: 'column',
+    // alignItems: 'center',
+    // justifyContent: 'center',
   },
   changeCameraIcon: {
     position: 'absolute',

@@ -21,11 +21,7 @@ const linking: LinkingOptions<RootStackParamList> = {
               HomeScreen: ROUTES.home,
             },
           },
-          Learning: {
-            screens: {
-              LearningScreen: ROUTES.learning,
-            },
-          },
+
           Profile: {
             screens: {
               ProfileScreen: ROUTES.profile,
@@ -43,6 +39,7 @@ const linking: LinkingOptions<RootStackParamList> = {
           // },
         },
       },
+      Result: ROUTES.result,
       Modal: 'modal',
       NotFound: '*',
     },

@@ -12,7 +12,18 @@ const Card = (props: IExerciseCardProps) => {
       style={styles.cardContainer}
       activeOpacity={0.5}
       underlayColor={COLORS.primaryDark}
-      onPress={() => navigation.navigate(ROUTES.root, { screen: ROUTES.learning })}
+      onPress={() =>
+        navigation.navigate(ROUTES.root, {
+          screen: ROUTES.learning,
+          params: {
+            reachedFromPage: ROUTES.home,
+            exerciseOptions: {
+              timeLimit: props.timeLimit,
+              level: props.level,
+            },
+          },
+        })
+      }
     >
       <View style={styles.cardContainer}>
         <ImageBackground

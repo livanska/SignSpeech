@@ -52,6 +52,7 @@ import X_hand from './Xhand.svg';
 import Y_hand from './Yhand.svg';
 import Z_hand from './Zhand.svg';
 import HandGesture from '../handsigns';
+import { SvgProps } from 'react-native-svg';
 
 export const LetterImages = {
   A: A_sign,
@@ -84,7 +85,7 @@ export const LetterImages = {
 
 export interface ISign {
   letterImage: any;
-  signImage: any;
+  signImage: React.FC<SvgProps>;
   letter: string;
   gesture: any;
 }

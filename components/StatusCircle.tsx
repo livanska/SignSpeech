@@ -4,25 +4,41 @@ import { ICON_TITLES } from '../constants/Enums';
 import Icon from './Icon';
 export interface IStatusCircleProps {
   isSuccess: boolean;
+  isUnknown?: boolean;
   height?: number;
   width?: number;
   style?: object;
+  customLinesSize?: number;
 }
 
-const StatusCircle = ({ isSuccess, style, ...sizes }: IStatusCircleProps) => {
+const StatusCircle = ({
+  isSuccess,
+  isUnknown,
+  customLinesSize,
+  style,
+  ...sizes
+}: IStatusCircleProps) => {
   return (
     <View
       style={[
-        { backgroundColor: isSuccess ? COLORS.success : COLORS.fail },
+        { backgroundColor: isSuccess ? COLORS.success : isUnknown ? COLORS.medium : COLORS.fail },
         styles.circleBackground,
         style,
         sizes,
       ]}
     >
       <Icon
-        size={isSuccess ? 15 : 25}
+        size={
+          isSuccess || isUnknown
+            ? customLinesSize
+              ? customLinesSize - 15
+              : 15
+            : customLinesSize
+            ? customLinesSize
+            : 25
+        }
         color={COLORS.white}
-        name={isSuccess ? ICON_TITLES.success : ICON_TITLES.fail}
+        name={isSuccess || isUnknown ? ICON_TITLES.success : ICON_TITLES.fail}
       />
     </View>
   );

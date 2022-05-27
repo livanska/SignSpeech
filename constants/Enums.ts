@@ -13,6 +13,7 @@ export enum ICON_TITLES {
   success = 'success',
   logOut = 'logOut',
   trash = 'trash',
+  medium = 'medium',
 }
 
 export enum FONT_TYPES {
