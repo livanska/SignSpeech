@@ -6,7 +6,7 @@
 import { BottomTabScreenProps } from '@react-navigation/bottom-tabs';
 import { CompositeScreenProps, NavigatorScreenParams } from '@react-navigation/native';
 import { NativeStackScreenProps } from '@react-navigation/native-stack';
-import { ICameraScreenProps } from '../screens/CameraScreen';
+import { ICameraScreenProps, IExerciseOptions } from '../screens/CameraScreen';
 import { IResultScreenProps } from '../screens/ResultScreen';
 
 declare global {
@@ -20,7 +20,7 @@ export type RootStackParamList = {
   Modal: undefined;
   NotFound: undefined;
   Authorization: undefined;
-  Result: { results: IResultScreenProps };
+  Result: { resultScreenOptions: IResultScreenProps };
 };
 
 export type RootStackScreenProps<Screen extends keyof RootStackParamList> = NativeStackScreenProps<
@@ -33,7 +33,7 @@ export type RootTabParamList = {
   Learning: { cameraScreenOptions: ICameraScreenProps };
   Translate: { cameraScreenOptions: ICameraScreenProps };
   Profile: undefined;
-  Result: { ResultScreenOptions: IResultScreenProps };
+  Task: { exerciseOptions: IExerciseOptions };
 };
 
 export type RootTabScreenProps<Screen extends keyof RootTabParamList> = CompositeScreenProps<

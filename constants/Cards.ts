@@ -1,4 +1,5 @@
-import defaultImg from '../assets/images/default-card-pink.png';
+import defaultImgPink from '../assets/images/default-card-pink.png';
+import defaultImgViolet from '../assets/images/default-card-violet.png';
 import min3Img from '../assets/images/speed-card-3.png';
 import min5Img from '../assets/images/speed-card-5.png';
 import min7Img from '../assets/images/speed-card-7.png';
@@ -76,7 +77,9 @@ export const getCardImage = ({ exerciseType, ...params }: IExerciseCardProps): C
     case EXERCISE_TYPE.StepByStep:
       return LEVEL_CARD_IMAGE[LEVEL[params.level]];
     default:
-      return defaultImg;
+      return params.translation === TRANSLATION_TYPE.signsToText
+        ? defaultImgPink
+        : defaultImgViolet;
   }
 };
 

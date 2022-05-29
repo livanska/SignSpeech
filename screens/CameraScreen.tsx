@@ -7,7 +7,7 @@ import BackButton from '../components/Buttons/BackButton';
 import GlassPanel from '../components/GlassPanel';
 import Icon from '../components/Icon';
 import StatusCircle from '../components/StatusCircle';
-import { ICON_TITLES } from '../constants/Enums';
+import { FONT_TYPES, ICON_TITLES } from '../constants/Enums';
 import { SCREEN_SIZE } from '../constants/Layout';
 import { ROUTES } from '../navigation/routes';
 import * as tf from '@tensorflow/tfjs';
@@ -15,14 +15,16 @@ import * as handpose from '@tensorflow-models/handpose';
 import * as fp from 'fingerpose';
 import { cameraWithTensors } from '@tensorflow/tfjs-react-native';
 import { ISign, Signs } from '../handimage';
-import Handsigns from '../handsigns';
+import HandGesture from '../handsigns';
 import Canvas from 'react-native-canvas';
 import { useIsFocused, useNavigationState } from '@react-navigation/core';
 import { COLORS } from '../constants/Colors';
 import { CARD_TYPE, LEVEL, TIME_LIMIT } from '../constants/Cards';
 import { IResultScreenProps } from './ResultScreen';
 import SvgUri from 'react-native-svg-uri';
-import N_hand from './../handimage/Nhand.svg';
+
+import { textStyles } from '../constants/TextStyle';
+
 export interface ICameraScreenProps {
   reachedFromPage: ROUTES.home | ROUTES.learning | ROUTES.translate;
   exerciseOptions?: IExerciseOptions;
@@ -67,7 +69,7 @@ const Camera = ({ route }) => {
     Platform.OS === 'ios' ? { width: 1080, height: 1920 } : { width: 1600, height: 1200 };
   const tensorDims = { width: 152, height: 200 };
 
-  const fingerJoints = {
+  const joints = {
     thumb: [0, 1, 2, 3, 4],
     index: [0, 5, 6, 7, 8],
     mid: [0, 9, 10, 11, 12],
@@ -111,32 +113,32 @@ const Camera = ({ route }) => {
   const prepareTF = async (): Promise<void> => {
     model = await handpose.load({ maxContinuousChecks: 10 });
     GE = new fp.GestureEstimator([
-      Handsigns.aSign,
-      Handsigns.bSign,
-      Handsigns.cSign,
-      Handsigns.dSign,
-      Handsigns.eSign,
-      Handsigns.fSign,
-      Handsigns.gSign,
-      Handsigns.hSign,
-      Handsigns.iSign,
-      Handsigns.jSign,
-      Handsigns.kSign,
-      Handsigns.lSign,
-      Handsigns.mSign,
-      Handsigns.nSign,
-      Handsigns.oSign,
-      Handsigns.pSign,
-      Handsigns.qSign,
-      Handsigns.rSign,
-      Handsigns.sSign,
-      Handsigns.tSign,
-      Handsigns.uSign,
-      Handsigns.vSign,
-      Handsigns.wSign,
-      Handsigns.xSign,
-      Handsigns.ySign,
-      Handsigns.zSign,
+      HandGesture.aSign,
+      HandGesture.bSign,
+      HandGesture.cSign,
+      HandGesture.dSign,
+      HandGesture.eSign,
+      HandGesture.fSign,
+      HandGesture.gSign,
+      HandGesture.hSign,
+      HandGesture.iSign,
+      HandGesture.jSign,
+      HandGesture.kSign,
+      HandGesture.lSign,
+      HandGesture.mSign,
+      HandGesture.nSign,
+      HandGesture.oSign,
+      HandGesture.pSign,
+      HandGesture.qSign,
+      HandGesture.rSign,
+      HandGesture.sSign,
+      HandGesture.tSign,
+      HandGesture.uSign,
+      HandGesture.vSign,
+      HandGesture.wSign,
+      HandGesture.xSign,
+      HandGesture.ySign,
+      HandGesture.zSign,
     ]);
   };
 
@@ -191,68 +193,46 @@ const Camera = ({ route }) => {
       if (hand[0]) {
         try {
           const estimatedGestures = GE.estimate(hand[0].landmarks, 7);
-          const ctx = canvasRef.current.getContext('2d');
-          drawHand(hand, ctx);
+          const canvas = canvasRef.current.getContext('2d');
+          draw(hand, canvas);
           if (estimatedGestures.gestures !== undefined && estimatedGestures.gestures.length > 0) {
             setPredictedSigns(estimatedGestures.gestures.map((el) => el.name));
           }
           tf.dispose(video);
-        } catch (e) {
-          console.log('ERRRROR', e);
+        } catch {
           return;
         }
       }
     });
   };
 
-  const drawHand = (prediction: any, ctx: any) => {
+  const draw = (prediction: any, canvas: any) => {
     if (prediction.length > 0 && !isCorrectSign) {
-      //loop to the preditions
       prediction.forEach((prediction) => {
-        //grab landmarks
-        const landmarks = prediction.landmarks;
+        const markers = prediction.landmarks;
         let widthCoef = 3.4;
         let heightCoef = 4.6;
-        //loop the finger joints
-        for (let j = 0; j < Object.keys(fingerJoints).length; j++) {
-          let finger = Object.keys(fingerJoints)[j];
-          for (let k = 0; k < fingerJoints[finger].length - 1; k++) {
-            const firstJointIndex = fingerJoints[finger][k];
-            const secondJointIndex = fingerJoints[finger][k + 1];
-
-            //draw joints
-
-            ctx.beginPath();
-            ctx.moveTo(
-              landmarks[firstJointIndex][0] * widthCoef,
-              landmarks[firstJointIndex][1] * heightCoef
-            );
-            ctx.lineTo(
-              landmarks[secondJointIndex][0] * widthCoef,
-              landmarks[secondJointIndex][1] * heightCoef
-            );
-            ctx.strokeStyle = 'gold';
-            ctx.lineWidth = 2;
-            ctx.stroke();
+        for (let i = 0; i < Object.keys(joints).length; i++) {
+          let finger = Object.keys(joints)[i];
+          for (let j = 0; j < joints[finger].length - 1; j++) {
+            const jointIdx1 = joints[finger][j];
+            const jointIdx2 = joints[finger][j + 1];
+            canvas.beginPath();
+            canvas.moveTo(markers[jointIdx1][0] * widthCoef, markers[jointIdx1][1] * heightCoef);
+            canvas.lineTo(markers[jointIdx2][0] * widthCoef, markers[jointIdx2][1] * heightCoef);
+            canvas.lineWidth = 2;
+            canvas.strokeStyle = 'white';
+            canvas.stroke();
           }
         }
-
-        //loop to landmarks and draw them
-        for (let i = 0; i < landmarks.length; i++) {
-          //get x point
-          const x = landmarks[i][0] * widthCoef;
-
-          //get y point
-          const y = landmarks[i][1] * heightCoef;
-
-          //start drawing
-          ctx.beginPath();
-          ctx.arc(x, y, 5, 0, 3 * Math.PI);
-
-          //set line color
-          ctx.fillStyle = 'navy';
-          ctx.fill();
-        }
+        markers.forEach((marker: number[]) => {
+          const x = marker[0] * widthCoef;
+          const y = marker[1] * heightCoef;
+          canvas.beginPath();
+          canvas.arc(x, y, 5, 0, 3 * Math.PI);
+          canvas.fillStyle = '#DE0C96';
+          canvas.fill();
+        });
       });
     }
   };
@@ -260,7 +240,7 @@ const Camera = ({ route }) => {
   const handleCameraStream = async (images: any) => {
     await prepareTF();
     // Add loading state
-    setTimerValue(exerciseOptions?.timeLimit * 2);
+    setTimerValue(exerciseOptions?.timeLimit * 60);
     const loop = async () => {
       if (model) {
         const nextImageTensor = images.next().value;
@@ -317,8 +297,8 @@ const Camera = ({ route }) => {
             }}
           />
           {timerValue !== null && (
-            <GlassPanel height={160} width={135} style={{}}>
-              <Text>{toTimeString(timerValue)}</Text>
+            <GlassPanel height={40} width={100} style={{}}>
+              <Text style={textStyles.heading}>{toTimeString(timerValue)}</Text>
             </GlassPanel>
           )}
           <View style={styles.signContainer}>
@@ -327,8 +307,8 @@ const Camera = ({ route }) => {
                 {/* Should be */}
                 {/* {reachedFromPage === ROUTES.learning && currentSign?.signImage && <SignImage />} */}
                 {/* Testing only */}
-                {currentSign?.signImage && <SignImage />}
-                <Text>{currentSign?.letter}</Text>
+                {/* {currentSign?.signImage && <SignImage />} */}
+                <Text style={[textStyles.default, { fontSize: 52 }]}>{currentSign?.letter}</Text>
               </View>
             </GlassPanel>
             {isCorrectSign !== null && (

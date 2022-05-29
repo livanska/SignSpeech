@@ -7,4 +7,5 @@ export enum ROUTES {
   register = 'Register',
   login = 'Login',
   result = 'Result',
+  task = 'Task',
 }

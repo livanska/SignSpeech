@@ -27,21 +27,9 @@ const linking: LinkingOptions<RootStackParamList> = {
               ProfileScreen: ROUTES.profile,
             },
           },
-          // TabThree: {
-          //   screens: {
-          //     TabThreeScreen: "two",
-          //   },
-          // },
-          // TabFour: {
-          //   screens: {
-          //     TabFourScreen: "two",
-          //   },
-          // },
         },
       },
       Result: ROUTES.result,
-      Modal: 'modal',
-      NotFound: '*',
     },
   },
 };

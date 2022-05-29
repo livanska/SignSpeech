@@ -20,6 +20,8 @@ import { useRecoilValue } from 'recoil';
 import Overlay from '../components/Overlay';
 import { authorizationState } from '../state/atoms';
 import ResultScreen from '../screens/ResultScreen';
+import TaskScreen from '../screens/TaskScreen';
+import Task from '../screens/TaskScreen';
 
 export default function Navigation() {
   const authorization = useRecoilValue(authorizationState);
@@ -36,7 +38,19 @@ function AuthorizedNavigator() {
   return (
     <>
       <Overlay />
-      <Stack.Navigator>
+      <Stack.Navigator
+        screenOptions={{
+          // headerLeftContainerStyle: { backgroundColor: COLORS.transparent },
+          headerTransparent: true,
+          // headerBackgroundContainerStyle: styles.header,
+          // headerStatusBarHeight: 32,
+          // tabBarShowLabel: false,
+          // tabBarActiveTintColor: COLORS.primaryLight,
+          headerShadowVisible: true,
+          headerStyle: styles.header,
+          headerTitleStyle: textStyles.heading,
+        }}
+      >
         <Stack.Screen name="Root" component={BottomTabNavigator} options={{ headerShown: false }} />
         <Stack.Screen name="Result" component={ResultScreen} options={{ headerShown: false }} />
         <Stack.Screen name="NotFound" component={NotFoundScreen} options={{ title: 'Oops!' }} />
@@ -84,21 +98,21 @@ function BottomTabNavigator() {
         component={HomeScreen}
         options={({ navigation, route }: RootTabScreenProps<`${ROUTES.home}`>) => ({
           tabBarIcon: ({ color }) => <TabBarIcon name={ICON_TITLES.home} color={color} />,
-          // headerRight: () => (
-          //   <Pressable
-          //     onPress={() => navigation.navigate('Modal')}
-          //     style={({ pressed }) => ({
-          //       opacity: pressed ? 0.5 : 1,
-          //     })}
-          //   >
-          //     <FontAwesome
-          //       name="info-circle"
-          //       size={25}
-          //       color={COLORS.mainText}
-          //       style={{ marginRight: 15 }}
-          //     />
-          //   </Pressable>
-          // ),
+          headerRight: () => (
+            <Pressable
+              onPress={() => {}}
+              style={({ pressed }) => ({
+                opacity: pressed ? 0.5 : 1,
+              })}
+            >
+              <FontAwesome
+                name="info-circle"
+                size={25}
+                color={COLORS.mainText}
+                style={{ marginRight: 15 }}
+              />
+            </Pressable>
+          ),
         })}
       />
       <BottomTab.Screen
@@ -126,6 +140,15 @@ function BottomTabNavigator() {
         component={Profile}
         options={{
           tabBarIcon: ({ color }) => <TabBarIcon name={ICON_TITLES.profile} color={color} />,
+        }}
+      />
+      <BottomTab.Screen
+        name={ROUTES.task}
+        component={Task}
+        options={{
+          tabBarStyle: { display: 'none' },
+          tabBarButton: () => null,
+          headerTitle: ROUTES.learning,
         }}
       />
     </BottomTab.Navigator>

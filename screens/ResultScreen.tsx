@@ -25,8 +25,8 @@ enum STATUS {
 const Result = ({ route }) => {
   const { allAmount, allCorrectAmount }: IResultScreenProps = route.params;
   const [status, setStatus] = useState<STATUS | null>(null);
-  const [percent] = useState<number>(+((allCorrectAmount * 100) / allAmount).toFixed(0));
   const navigation = useNavigation();
+  const [percent] = useState<number>(+((allCorrectAmount * 100) / allAmount).toFixed(0));
 
   useEffect(() => {
     setStatus(percent >= 50 ? (percent >= 80 ? STATUS.success : STATUS.medium) : STATUS.failed);
@@ -68,6 +68,7 @@ const Result = ({ route }) => {
 };
 const styles = StyleSheet.create({
   resultContainer: {
+    backgroundColor: 'white',
     alignItems: 'center',
     justifyContent: 'center',
     width: SCREEN_SIZE.width,

@@ -3,9 +3,10 @@ import { COLORS } from '../constants/Colors';
 import { FONT_TYPES } from '../constants/Enums';
 import { ROUTES } from '../navigation/routes';
 import { useNavigation } from '@react-navigation/native';
-import { getCardImage, IExerciseCardProps } from '../constants/Cards';
+import { getCardImage, IExerciseCardProps, TRANSLATION_TYPE } from '../constants/Cards';
 
 const Card = (props: IExerciseCardProps) => {
+  const { title, timeLimit, level, translation } = props;
   const navigation = useNavigation();
   return (
     <TouchableHighlight
@@ -13,16 +14,23 @@ const Card = (props: IExerciseCardProps) => {
       activeOpacity={0.5}
       underlayColor={COLORS.primaryDark}
       onPress={() =>
-        navigation.navigate(ROUTES.root, {
-          screen: ROUTES.learning,
-          params: {
-            reachedFromPage: ROUTES.home,
-            exerciseOptions: {
-              timeLimit: props.timeLimit,
-              level: props.level,
-            },
-          },
-        })
+        translation === TRANSLATION_TYPE.signsToText
+          ? navigation.navigate(ROUTES.root, {
+              screen: ROUTES.learning,
+              params: {
+                reachedFromPage: ROUTES.home,
+                exerciseOptions: {
+                  timeLimit: timeLimit,
+                  level: level,
+                },
+              },
+            })
+          : navigation.navigate(ROUTES.task, {
+              exerciseOptions: {
+                timeLimit,
+                level,
+              },
+            })
       }
     >
       <View style={styles.cardContainer}>
@@ -38,7 +46,7 @@ const Card = (props: IExerciseCardProps) => {
           />
           <View style={styles.titlesContainer}>
             <View>
-              <Text style={styles.title}>{props.title}</Text>
+              <Text style={styles.title}>{title}</Text>
             </View>
             <View>
               <Text style={styles.title}>{'Start >'}</Text>

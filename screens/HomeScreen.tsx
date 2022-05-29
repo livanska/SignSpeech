@@ -7,8 +7,8 @@ import { ROUTES } from '../navigation/routes';
 
 export const items = [
   {
-    title: 'Sign Learning',
-    translation: TRANSLATION_TYPE.signsToText,
+    title: 'Sign Translating',
+    translation: TRANSLATION_TYPE.textToSign,
     exerciseType: EXERCISE_TYPE.SpeedTest,
     timeLimit: TIME_LIMIT.min3,
     type: CARD_TYPE.exercise,
@@ -67,6 +67,30 @@ export const itemsStep = [
   },
 ];
 
+export const itemsDaily = [
+  {
+    title: 'Sign Learning',
+    translation: TRANSLATION_TYPE.signsToText,
+    // exerciseType: EXERCISE_TYPE.StepByStep,
+    level: LEVEL.easy,
+    type: CARD_TYPE.exercise,
+  },
+  {
+    title: 'Sign Translating',
+    translation: TRANSLATION_TYPE.textToSign,
+    // exerciseType: EXERCISE_TYPE.,
+    level: LEVEL.medium,
+    type: CARD_TYPE.exercise,
+  },
+  {
+    title: 'Sign Learning',
+    translation: TRANSLATION_TYPE.signsToText,
+    exerciseType: EXERCISE_TYPE.StepByStep,
+    level: LEVEL.hard,
+    type: CARD_TYPE.exercise,
+  },
+];
+
 export const itemsVideo = [
   {
     videoId: 'tkMg8g8vVUo',
@@ -88,7 +112,7 @@ const rowMockSpeedTest = {
 };
 const rowMockDailyChallenge = {
   title: 'Daily challenge',
-  items: items,
+  items: itemsDaily,
 };
 
 const rowMockStepByStep = {

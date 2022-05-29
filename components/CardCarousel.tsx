@@ -8,7 +8,7 @@ export interface ICardCarouselProps {
   items: ICardProps[];
 }
 
-const _renderItem = ({ item }: { item: ICardProps; index: number }) => {
+const renderItem = ({ item }: { item: ICardProps; index: number }) => {
   return item.type === CARD_TYPE.video ? (
     <VideoCard {...(item as IVideoCardProps)} />
   ) : (
@@ -22,7 +22,7 @@ const CardCarousel = ({ items }: ICardCarouselProps) => {
       <Carousel
         layout={'default'}
         data={items}
-        renderItem={_renderItem.bind(this)}
+        renderItem={renderItem.bind(this)}
         sliderWidth={SCREEN_SIZE.width}
         sliderHeight={220}
         itemWidth={335}
