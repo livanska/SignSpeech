@@ -20,6 +20,7 @@ import IconLink from '../components/IconLink';
 import GradientButton from '../components/Buttons/GradientButton';
 import { logOutUser, updateUser, uploadUserPhoto } from '../firebase/user';
 import ImageData from 'react-native-canvas/dist/ImageData';
+import { SCREEN_SIZE } from '../constants/Layout';
 
 const Profile = () => {
   const removeUser = useResetRecoilState(userState);
@@ -100,11 +101,6 @@ const Profile = () => {
   };
 
   const profileOptions: IMenuItemProps[] = [
-    {
-      title: 'Clean my progress',
-      icon: ICON_TITLES.trash,
-      onPress: () => {},
-    },
     {
       title: 'Edit profile',
       icon: ICON_TITLES.edit,
@@ -190,6 +186,9 @@ const Profile = () => {
         </View>
       </View>
       <Menu items={profileOptions} />
+      <View style={styles.versionContainer}>
+        <Text style={[textStyles.subtitle, { textAlign: 'center' }]}>Version 1.0.0</Text>
+      </View>
     </View>
   );
 };
@@ -257,6 +256,13 @@ const styles = StyleSheet.create({
     flexDirection: 'row',
     justifyContent: 'space-between',
     display: 'flex',
+  },
+  versionContainer: {
+    position: 'absolute',
+    top: SCREEN_SIZE.height - 100,
+    display: 'flex',
+    justifyContent: 'center',
+    width: SCREEN_SIZE.width,
   },
 });
 

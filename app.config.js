@@ -20,11 +20,11 @@ export default {
     slug: 'sign-speech',
     version: '1.0.0',
     orientation: 'portrait',
-    icon: './assets/images/icon.png',
+    icon: './assets/images/logo-icon.png',
     scheme: 'myapp',
     userInterfaceStyle: 'automatic',
     splash: {
-      image: './assets/images/splash.png',
+      image: './assets/images/splash-screen.png',
       resizeMode: 'contain',
       backgroundColor: '#ffffff',
     },

@@ -392,7 +392,6 @@ const Camera = ({ route }) => {
 
   const handleCameraStream = async (images: any) => {
     await prepareTF();
-    // Add loading state
     setIsLoading(false);
     exerciseOptions?.timeLimit && setTimerValue(exerciseOptions?.timeLimit * 60);
     exerciseOptions?.level && setLevelTimerValue(LEVEL_TIMERS[exerciseOptions?.level]);
@@ -527,7 +526,7 @@ const Camera = ({ route }) => {
             >
               <GlassPanel height={80} width={150} style={{}}>
                 <Text style={[textStyles.heading, { textAlign: 'center' }]}>
-                  {exerciseOptions.sentence}
+                  {!isLoading && exerciseOptions.sentence}
                   {'\n'}
                   <Text style={textStyles.heading}>{`00:${
                     +sentenceTimerValue / 1000 > 9 ? '' : '0'
@@ -546,13 +545,12 @@ const Camera = ({ route }) => {
             >
               <View style={styles.glassPanelContent}>
                 <Text style={[textStyles.default, { fontSize: 52, textAlign: 'center' }]}>
-                  {reachedFromPage === ROUTES.translate && predictedSigns
-                    ? predictedSigns[0]
-                    : currentSign?.letter}
+                  {reachedFromPage === ROUTES.translate
+                    ? predictedSigns && predictedSigns[0]
+                    : !isLoading && currentSign?.letter}
                 </Text>
                 {reachedFromPage === ROUTES.learning && (
                   <Text style={[textStyles.default, { textAlign: 'center' }]}>
-                    {' '}
                     Press to see hint
                   </Text>
                 )}

@@ -185,7 +185,7 @@ const Home = () => {
       <View style={styles.homeContainer}>
         <TitleRow {...rowMockDailyChallenge} />
         <Link
-          onPress={() => navigation.navigate(ROUTES.root, { screen: ROUTES.learning })}
+          onPress={() => navigation.navigate(ROUTES.root, { screen: ROUTES.select })}
           isHeading={true}
           preLinkText={'Still don’t know how to show your speech to deaf audience?'}
           linkText={'Learn now!'}

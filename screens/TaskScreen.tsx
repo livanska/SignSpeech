@@ -11,7 +11,8 @@ import { ISign, Signs } from '../handimage';
 import { IResultScreenProps } from './ResultScreen';
 import SignCard from '../components/SignCard';
 import IconLink from '../components/IconLink';
-import { ICON_TITLES } from '../constants/Enums';
+import { FONT_TYPES, ICON_TITLES } from '../constants/Enums';
+import Spinner from 'react-native-loading-spinner-overlay/lib';
 
 const Task = ({ route }) => {
   const exerciseOptions: IExerciseOptions = route.params.exerciseOptions;
@@ -25,6 +26,7 @@ const Task = ({ route }) => {
     allAmount: exerciseOptions?.timeLimit * 6,
     allCorrectAmount: 0,
   });
+  const [isLoading, setIsLoading] = useState<boolean>(false);
   const isFocusedScreen: boolean = useIsFocused();
   const navigation = useNavigation();
 
@@ -53,10 +55,14 @@ const Task = ({ route }) => {
     (async () => {
       if (isFocusedScreen) {
         if (exerciseOptions?.timeLimit) {
+          setIsLoading(true);
           setTimerValue(null);
           setSelectedSign(null);
           setIsBack(false);
-          setTimeout(() => setTimerValue(exerciseOptions?.timeLimit * 2), 2000);
+          setTimeout(() => {
+            setIsLoading(false);
+            setTimerValue(exerciseOptions?.timeLimit * 60);
+          }, 2000);
         }
         setRandomSignAndAnswers();
       } else {
@@ -99,6 +105,22 @@ const Task = ({ route }) => {
   const SignImage = Signs[0]?.signImage;
   return (
     <View style={styles.taskContainer}>
+      {isLoading && (
+        <Spinner
+          animation="fade"
+          visible={true}
+          textContent={'Loading...'}
+          size={'large'}
+          textStyle={{
+            fontSize: 24,
+            includeFontPadding: false,
+            fontFamily: FONT_TYPES.regular,
+            color: COLORS.white,
+          }}
+          color={COLORS.white}
+          overlayColor={'rgba(0, 0, 0, 0.25)'}
+        />
+      )}
       <View style={styles.topRow}>
         <IconLink
           linkText={'Back'}
@@ -118,7 +140,7 @@ const Task = ({ route }) => {
       <Text style={[textStyles.rowHeading, { marginBottom: 15 }]}>Which letter is it?</Text>
       <View style={styles.signImageCircle}>
         <View style={styles.signImage}>
-          {currentSign?.signImage && <SignImage width={154} stroke={'#000000'} />}
+          {currentSign?.signImage && !isLoading && <SignImage width={154} stroke={'#000000'} />}
           {overlayColor != COLORS.transparent && (
             <StatusCircle style={styles.statusCircle} isSuccess={overlayColor === COLORS.success} />
           )}
