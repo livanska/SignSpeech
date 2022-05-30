@@ -138,6 +138,14 @@ function BottomTabNavigator() {
         }}
       />
       <BottomTab.Screen
+        name={ROUTES.signTask}
+        component={Camera}
+        options={{
+          tabBarStyle: { display: 'none' },
+          tabBarButton: () => null,
+        }}
+      />
+      <BottomTab.Screen
         name={ROUTES.task}
         component={Task}
         options={{

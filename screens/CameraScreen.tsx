@@ -1,8 +1,8 @@
 import { useNavigation } from '@react-navigation/native';
 import { Camera as CameraComponent, requestCameraPermissionsAsync, Constants } from 'expo-camera';
 import { CameraType } from 'expo-camera/build/Camera.types';
-import React, { useEffect, useRef, useState } from 'react';
-import { View, Text, StyleSheet, Platform, Image } from 'react-native';
+import React, { useCallback, useEffect, useRef, useState } from 'react';
+import { View, Text, StyleSheet, Platform, Image, Linking } from 'react-native';
 import BackButton from '../components/Buttons/BackButton';
 import GlassPanel from '../components/GlassPanel';
 import Icon from '../components/Icon';
@@ -21,7 +21,7 @@ import { useIsFocused, useNavigationState } from '@react-navigation/core';
 import { COLORS } from '../constants/Colors';
 import { CARD_TYPE, LEVEL, TIME_LIMIT } from '../constants/Cards';
 import { IResultScreenProps } from './ResultScreen';
-import SvgUri from 'react-native-svg-uri';
+import Spinner from 'react-native-loading-spinner-overlay';
 
 import { textStyles } from '../constants/TextStyle';
 
@@ -74,7 +74,7 @@ const getSignsFromSentence = (sentence: string): ISign[] | null =>
 const TensorCamera = cameraWithTensors(CameraComponent);
 
 const Camera = ({ route }) => {
-  const { reachedFromPage, exerciseOptions }: ICameraScreenProps = route.params;
+  const { reachedFromPage, exerciseOptions }: ICameraScreenProps = route.params.cameraScreenOptions;
   let requestAnimationFrameId = 0;
   const navigation = useNavigation();
   const [timerValue, setTimerValue] = useState<number | null>(null);
@@ -94,11 +94,13 @@ const Camera = ({ route }) => {
   const [isCorrectSign, setIsCorrectSign] = useState<boolean | null>(null);
   const [shouldOverlay, setShouldOverlay] = useState<boolean | null>(false);
   const [isBack, setIsBack] = useState<boolean>(false);
+  const [signHintVisible, setSignHintVisible] = useState<boolean>(false);
   const [isLastSign, setIsLastSign] = useState<boolean>(false);
   const [result, setResult] = useState<IResultScreenProps>({
     allAmount: 0,
     allCorrectAmount: 0,
   });
+  const [isLoading, setIsLoading] = useState<boolean>(false);
   const isFocusedScreen: boolean = useIsFocused();
   let cameraRef = useRef(null);
   const canvasRef = useRef(null);
@@ -108,12 +110,17 @@ const Camera = ({ route }) => {
   useEffect(() => {
     (async () => {
       if (isFocusedScreen) {
+        setCurrentSign(null);
+        setIsLoading(true);
         if (!hasPermission) {
           const { status } = await requestCameraPermissionsAsync();
           setHasPermission(status === 'granted');
         }
         setIsCameraActive(true);
-        if (reachedFromPage === ROUTES.home) {
+        if (
+          reachedFromPage === ROUTES.home &&
+          (exerciseOptions?.timeLimit || exerciseOptions?.sentence || exerciseOptions?.level)
+        ) {
           setIsBack(false);
           if (exerciseOptions?.timeLimit) {
             setTimerValue(null);
@@ -151,19 +158,16 @@ const Camera = ({ route }) => {
         setIsCorrectSign(null);
         setCurrentSign(null);
         setIsCameraActive(false);
+        setSignHintVisible(false);
         exerciseOptions?.sentence && setSentenceSigns(null);
       }
     })();
   }, [isFocusedScreen]);
 
   const getNextRandomSign = () => {
-    if (exerciseOptions?.level) {
-      setRandomSignForLevel();
-    } else if (exerciseOptions?.sentence) {
-      setSignOfSentence();
-    } else {
-      setRandomSign();
-    }
+    if (exerciseOptions?.level) setRandomSignForLevel();
+    else if (exerciseOptions?.sentence) setSignOfSentence();
+    else setRandomSign();
   };
 
   useEffect(() => {
@@ -223,6 +227,7 @@ const Camera = ({ route }) => {
         !exerciseOptions?.level &&
           !exerciseOptions?.timeLimit &&
           !exerciseOptions?.sentence &&
+          currentSign?.letter &&
           setIsCorrectSign(false);
       }
     }
@@ -388,6 +393,7 @@ const Camera = ({ route }) => {
   const handleCameraStream = async (images: any) => {
     await prepareTF();
     // Add loading state
+    setIsLoading(false);
     exerciseOptions?.timeLimit && setTimerValue(exerciseOptions?.timeLimit * 60);
     exerciseOptions?.level && setLevelTimerValue(LEVEL_TIMERS[exerciseOptions?.level]);
     exerciseOptions?.sentence && setSentenceTimerValue(defaultTimerValue);
@@ -439,15 +445,50 @@ const Camera = ({ route }) => {
         resizeWidth={tensorDims.width}
       />
       <Canvas ref={canvasRef} style={styles.canvasComponent} />
-      <View
-        style={[
-          styles.blinkOverlay,
-          {
-            backgroundColor: isCorrectSign ? COLORS.success : COLORS.fail,
-            opacity: +shouldOverlay - 0.8,
-          },
-        ]}
-      />
+      {signHintVisible && (
+        <View
+          style={{
+            position: 'absolute',
+            // alignItems: 'center',
+            height: '100%',
+            width: '100%',
+            display: 'flex',
+            justifyContent: 'center',
+            zIndex: 10,
+            flex: 0,
+            marginLeft: 0,
+          }}
+        >
+          <SignImage height={600} width={300} />
+        </View>
+      )}
+      {isLoading && (
+        <Spinner
+          animation="fade"
+          visible={true}
+          textContent={'Loading...'}
+          size={'large'}
+          textStyle={{
+            fontSize: 24,
+            includeFontPadding: false,
+            fontFamily: FONT_TYPES.regular,
+            color: COLORS.white,
+          }}
+          color={COLORS.white}
+          overlayColor={'rgba(0, 0, 0, 0.25)'}
+        />
+      )}
+      {reachedFromPage !== ROUTES.translate && (
+        <View
+          style={[
+            styles.blinkOverlay,
+            {
+              backgroundColor: isCorrectSign ? COLORS.success : COLORS.fail,
+              opacity: +shouldOverlay - 0.8,
+            },
+          ]}
+        />
+      )}
       <View style={styles.overlayInfoContainer}>
         <View style={styles.topRowContainer}>
           <BackButton
@@ -469,7 +510,7 @@ const Camera = ({ route }) => {
             >
               <GlassPanel height={80} width={100} style={{}}>
                 <Text style={[textStyles.heading, { textAlign: 'center' }]}>
-                  {exerciseOptions.level.toUpperCase()}
+                  {exerciseOptions?.level.toUpperCase()}
                   {'\n'}
                   <Text style={textStyles.heading}>{`00:${+levelTimerValue / 1000 > 9 ? '' : '0'}${
                     levelTimerValue / 1000
@@ -496,19 +537,28 @@ const Camera = ({ route }) => {
             </View>
           )}
           <View style={styles.signContainer}>
-            <GlassPanel height={160} width={135} style={{}} onPress={handleCameraTypeChange}>
+            <GlassPanel
+              height={160}
+              width={135}
+              style={{}}
+              onPressIn={() => reachedFromPage === ROUTES.learning && setSignHintVisible(true)}
+              onPressOut={() => reachedFromPage === ROUTES.learning && setSignHintVisible(false)}
+            >
               <View style={styles.glassPanelContent}>
-                {/* Should be */}
-                {reachedFromPage === ROUTES.learning &&
-                  !exerciseOptions.level &&
-                  !exerciseOptions.timeLimit &&
-                  currentSign?.signImage && <SignImage />}
-                {/* Testing only */}
-                {/* {currentSign?.signImage && <SignImage />} */}
-                <Text style={[textStyles.default, { fontSize: 52 }]}>{currentSign?.letter}</Text>
+                <Text style={[textStyles.default, { fontSize: 52, textAlign: 'center' }]}>
+                  {reachedFromPage === ROUTES.translate && predictedSigns
+                    ? predictedSigns[0]
+                    : currentSign?.letter}
+                </Text>
+                {reachedFromPage === ROUTES.learning && (
+                  <Text style={[textStyles.default, { textAlign: 'center' }]}>
+                    {' '}
+                    Press to see hint
+                  </Text>
+                )}
               </View>
             </GlassPanel>
-            {isCorrectSign !== null && (
+            {reachedFromPage !== ROUTES.translate && predictedSigns && isCorrectSign !== null && (
               <StatusCircle style={styles.statusCircle} isSuccess={isCorrectSign} />
             )}
           </View>

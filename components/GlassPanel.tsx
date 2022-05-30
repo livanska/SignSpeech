@@ -8,15 +8,26 @@ export interface IGlassPanelProps {
   children?: ReactElement | ReactElement[];
   style?: object;
   onPress?(): void;
+  onPressIn?(): void;
+  onPressOut?(): void;
 }
 
-const GlassPanel = ({ children, style, onPress, ...sizes }: IGlassPanelProps) => {
+const GlassPanel = ({
+  children,
+  style,
+  onPressIn,
+  onPress,
+  onPressOut,
+  ...sizes
+}: IGlassPanelProps) => {
   return (
     <TouchableHighlight
       style={{ ...style, ...sizes, ...{ borderRadius: 7 } }}
       activeOpacity={0.5}
-      underlayColor={COLORS.primaryDark}
+      underlayColor={COLORS.menuItemPressed}
       onPress={onPress}
+      onPressOut={onPressOut}
+      onPressIn={onPressIn}
     >
       <View style={{ ...sizes }}>
         <Image style={[styles.blur, sizes]} blurRadius={40} source={{}} />

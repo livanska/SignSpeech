@@ -32,6 +32,7 @@ export type RootTabParamList = {
   Home: undefined;
   Learning: { cameraScreenOptions: ICameraScreenProps };
   Translate: { cameraScreenOptions: ICameraScreenProps };
+  SignTask: { cameraScreenOptions: ICameraScreenProps };
   Profile: undefined;
   Task: { exerciseOptions: IExerciseOptions };
 };

@@ -15,14 +15,13 @@ const Card = (props: IExerciseCardProps) => {
       underlayColor={COLORS.primaryDark}
       onPress={() =>
         translation === TRANSLATION_TYPE.signsToText
-          ? navigation.navigate(ROUTES.root, {
-              screen: ROUTES.learning,
-              params: {
+          ? navigation.navigate(ROUTES.signTask, {
+              cameraScreenOptions: {
                 reachedFromPage: ROUTES.home,
                 exerciseOptions: {
-                  timeLimit: timeLimit,
-                  level: level,
-                  sentence: sentence,
+                  timeLimit,
+                  level,
+                  sentence,
                 },
               },
             })
