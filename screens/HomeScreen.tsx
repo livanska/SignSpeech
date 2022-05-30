@@ -1,9 +1,23 @@
-import { ScrollView, StyleSheet, TouchableOpacity, View } from 'react-native';
+import { ScrollView, StyleSheet, TouchableOpacity, View, Text, Image } from 'react-native';
 import TitleRow from '../components/TitleRow';
 import { CARD_TYPE, EXERCISE_TYPE, LEVEL, TIME_LIMIT, TRANSLATION_TYPE } from '../constants/Cards';
 import Link from '../components/Link';
 import { useNavigation } from '@react-navigation/core';
 import { ROUTES } from '../navigation/routes';
+import ModalScreen from './ModalScreen';
+import IconLink from '../components/IconLink';
+import GradientButton from '../components/Buttons/GradientButton';
+import { textStyles } from '../constants/TextStyle';
+import { ReactElement, useEffect, useState } from 'react';
+import { IScreen } from '../state/types';
+import { useRecoilState, useSetRecoilState } from 'recoil';
+import { screenState } from '../state/atoms';
+import { ICON_TITLES } from '../constants/Enums';
+import { FontAwesome } from '@expo/vector-icons';
+import { COLORS } from '../constants/Colors';
+
+const internationalSignText =
+  'International Sign (IS) is a contact variety of sign language used in a variety of different contexts, particularly at international meetings such as the World Federation of the Deaf (WFD) congress, events such as the Deaflympics, in video clips produced by Deaf people and watched by other Deaf people from around the world, and informally when travelling and socialising. ';
 
 export const items = [
   {
@@ -134,8 +148,42 @@ const rowMockVideo = {
 
 const Home = () => {
   const navigation = useNavigation();
+  const [screen, setScreen] = useRecoilState(screenState);
+
+  const closeModal = (): void => {
+    setScreen((prev: IScreen) => ({
+      ...prev,
+      isOverlay: false,
+    }));
+  };
+
+  const InfoModal = (): ReactElement => {
+    return (
+      <ModalScreen height={500} visible={screen.isOverlay} close={closeModal}>
+        <View style={styles.modalContainer}>
+          <View style={styles.modalTextContainer}>
+            <Text style={textStyles.heading}>Help</Text>
+            <Text style={textStyles.subtitle}>{internationalSignText}</Text>
+          </View>
+          <Image style={styles.modalImage} source={require('../assets/images/signs.jpg')} />
+
+          <View style={styles.buttonsRow}>
+            <IconLink
+              linkText="Back"
+              onPress={closeModal}
+              icon={ICON_TITLES.chevronLeft}
+              gapSize={2}
+              iconSize={28}
+            />
+            <GradientButton title="Got it!" onPress={async () => {}} />
+          </View>
+        </View>
+      </ModalScreen>
+    );
+  };
   return (
     <ScrollView>
+      {screen.isOverlay && <InfoModal />}
       <View style={styles.homeContainer}>
         <TitleRow {...rowMockDailyChallenge} />
         <Link
@@ -154,6 +202,29 @@ const Home = () => {
 const styles = StyleSheet.create({
   homeContainer: {
     marginTop: 90,
+  },
+  modalContainer: {
+    marginVertical: 50,
+    marginHorizontal: 40,
+    alignItems: 'center',
+    justifyContent: 'center',
+  },
+  modalTextContainer: {
+    display: 'flex',
+    width: '100%',
+  },
+  modalImage: {
+    display: 'flex',
+    width: '100%',
+    resizeMode: 'contain',
+    height: 190,
+  },
+  buttonsRow: {
+    width: '100%',
+    marginVertical: 25,
+    flexDirection: 'row',
+    justifyContent: 'space-between',
+    display: 'flex',
   },
 });
 export default Home;

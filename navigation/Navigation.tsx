@@ -12,20 +12,20 @@ import LinkingConfiguration from './LinkingConfiguration';
 import { ROUTES } from './routes';
 import { textStyles } from '../constants/TextStyle';
 import { TabBarIcon } from '../components/TabBarIcon';
-import HomeScreen from '../screens/HomeScreen';
 import Profile from '../screens/ProfileScreen';
 import Authorization from '../screens/AutorizationScreen';
 import Camera from '../screens/CameraScreen';
-import { useRecoilValue } from 'recoil';
+import { useRecoilValue, useSetRecoilState } from 'recoil';
 import Overlay from '../components/Overlay';
-import { authorizationState } from '../state/atoms';
+import { authorizationState, screenState } from '../state/atoms';
 import ResultScreen from '../screens/ResultScreen';
-import TaskScreen from '../screens/TaskScreen';
 import Task from '../screens/TaskScreen';
 import Home from '../screens/HomeScreen';
+import { IScreen } from '../state/types';
 
 export default function Navigation() {
   const authorization = useRecoilValue(authorizationState);
+
   return (
     <NavigationContainer linking={LinkingConfiguration}>
       {authorization.isAuthorized ? <AuthorizedNavigator /> : <UnAuthorizedNavigator />}
@@ -35,31 +35,20 @@ export default function Navigation() {
 
 const Stack = createNativeStackNavigator<RootStackParamList>();
 
-function AuthorizedNavigator() {
+const AuthorizedNavigator = () => {
   return (
     <>
       <Overlay />
-      <Stack.Navigator
-        screenOptions={{
-          // headerLeftContainerStyle: { backgroundColor: COLORS.transparent },
-          headerTransparent: true,
-          // headerBackgroundContainerStyle: styles.header,
-          // headerStatusBarHeight: 32,
-          // tabBarShowLabel: false,
-          // tabBarActiveTintColor: COLORS.primaryLight,
-          headerShadowVisible: true,
-          headerStyle: styles.header,
-          headerTitleStyle: textStyles.heading,
-        }}
-      >
+      <Stack.Navigator>
         <Stack.Screen name="Root" component={BottomTabNavigator} options={{ headerShown: false }} />
         <Stack.Screen name="Result" component={ResultScreen} options={{ headerShown: false }} />
         <Stack.Screen name="NotFound" component={NotFoundScreen} options={{ title: 'Oops!' }} />
       </Stack.Navigator>
     </>
   );
-}
-function UnAuthorizedNavigator() {
+};
+
+const UnAuthorizedNavigator = () => {
   return (
     <Stack.Navigator>
       <Stack.Screen
@@ -70,14 +59,12 @@ function UnAuthorizedNavigator() {
       <Stack.Screen name="NotFound" component={NotFoundScreen} options={{ title: 'Oops!' }} />
     </Stack.Navigator>
   );
-}
+};
 
 const BottomTab = createBottomTabNavigator<RootTabParamList>();
 
-// const LearningCamera = () => <Camera />;
-// const TranslateCamera = () => <Camera />;
-
 function BottomTabNavigator() {
+  const setScreen = useSetRecoilState(screenState);
   return (
     <BottomTab.Navigator
       initialRouteName={ROUTES.home}
@@ -101,7 +88,12 @@ function BottomTabNavigator() {
           tabBarIcon: ({ color }) => <TabBarIcon name={ICON_TITLES.home} color={color} />,
           headerRight: () => (
             <Pressable
-              onPress={() => {}}
+              onPress={() => {
+                setScreen((prev: IScreen) => ({
+                  ...prev,
+                  isOverlay: true,
+                }));
+              }}
               style={({ pressed }) => ({
                 opacity: pressed ? 0.5 : 1,
               })}
@@ -157,6 +149,7 @@ function BottomTabNavigator() {
     </BottomTab.Navigator>
   );
 }
+
 const styles = StyleSheet.create({
   header: {
     backgroundColor: COLORS.white,
