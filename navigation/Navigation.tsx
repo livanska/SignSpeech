@@ -22,6 +22,7 @@ import ResultScreen from '../screens/ResultScreen';
 import Task from '../screens/TaskScreen';
 import Home from '../screens/HomeScreen';
 import { IScreen } from '../state/types';
+import Select from '../screens/SelectScreen';
 
 export default function Navigation() {
   const authorization = useRecoilValue(authorizationState);
@@ -109,12 +110,12 @@ function BottomTabNavigator() {
         })}
       />
       <BottomTab.Screen
-        name={ROUTES.learning}
-        component={Camera}
-        initialParams={{ cameraScreenOptions: { reachedFromPage: ROUTES.learning } }}
-        options={({ navigation, route }: RootTabScreenProps<`${ROUTES.learning}`>) => ({
+        name={ROUTES.select}
+        component={Select}
+        options={({ navigation, route }: RootTabScreenProps<`${ROUTES.select}`>) => ({
           navigation,
           route,
+          title: 'Learning',
           tabBarStyle: { display: 'none' },
           tabBarIcon: ({ color }) => <TabBarIcon name={ICON_TITLES.learning} color={color} />,
         })}

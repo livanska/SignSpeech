@@ -9,4 +9,5 @@ export enum ROUTES {
   result = 'Result',
   task = 'Task',
   signTask = 'SignTask',
+  select = 'Select',
 }

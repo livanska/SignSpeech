@@ -14,7 +14,7 @@ import IconLink from '../components/IconLink';
 import { ICON_TITLES } from '../constants/Enums';
 
 const Task = ({ route }) => {
-  const { timeLimit, level }: IExerciseOptions = route.params.exerciseOptions;
+  const exerciseOptions: IExerciseOptions = route.params.exerciseOptions;
   const [currentSign, setCurrentSign] = useState<ISign>(null);
   const [selectedSign, setSelectedSign] = useState<ISign>(null);
   const [answerVariantSigns, setAnswerVariantSigns] = useState<ISign[]>([]);
@@ -22,7 +22,7 @@ const Task = ({ route }) => {
   const [overlayColor, setOverlayColor] = useState<COLORS>(COLORS.transparent);
   const [isBack, setIsBack] = useState<boolean>(false);
   const [result, setResult] = useState<IResultScreenProps>({
-    allAmount: timeLimit * 6,
+    allAmount: exerciseOptions?.timeLimit * 6,
     allCorrectAmount: 0,
   });
   const isFocusedScreen: boolean = useIsFocused();
@@ -48,16 +48,17 @@ const Task = ({ route }) => {
   useEffect(() => {
     setIsBack(false);
   }, []);
+
   useEffect(() => {
     (async () => {
       if (isFocusedScreen) {
-        if (timeLimit) {
+        if (exerciseOptions?.timeLimit) {
           setTimerValue(null);
           setSelectedSign(null);
           setIsBack(false);
-          setRandomSignAndAnswers();
-          setTimeout(() => setTimerValue(timeLimit * 2), 2000);
+          setTimeout(() => setTimerValue(exerciseOptions?.timeLimit * 2), 2000);
         }
+        setRandomSignAndAnswers();
       } else {
         setTimerValue(0);
       }
@@ -109,7 +110,9 @@ const Task = ({ route }) => {
           isHeading={true}
           gapSize={1}
         />
-        <Text style={textStyles.heading}>{toTimeString(timerValue)}</Text>
+        {exerciseOptions?.timeLimit && (
+          <Text style={textStyles.heading}>{toTimeString(timerValue)}</Text>
+        )}
       </View>
       <View style={styles.taskInfo}></View>
       <Text style={[textStyles.rowHeading, { marginBottom: 15 }]}>Which letter is it?</Text>

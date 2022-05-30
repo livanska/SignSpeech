@@ -15,11 +15,11 @@ const GradientButton = ({ title, onPress, disabled, ...sizes }: IGradientButtonP
     <View style={!disabled && styles.shadowContainer}>
       <LinearGradient
         colors={disabled ? GRADIENTS.DISABLED : GRADIENTS.PRIMARY}
-        style={styles.buttonContainer}
+        style={{ ...styles.buttonContainer, ...sizes }}
       >
         <TouchableHighlight
           disabled={disabled}
-          style={[styles.buttonContainer, sizes]}
+          style={{ ...styles.buttonContainer, ...sizes }}
           activeOpacity={1}
           underlayColor={COLORS.primaryMedium}
           onPress={onPress}
