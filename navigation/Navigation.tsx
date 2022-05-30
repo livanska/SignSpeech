@@ -22,6 +22,7 @@ import { authorizationState } from '../state/atoms';
 import ResultScreen from '../screens/ResultScreen';
 import TaskScreen from '../screens/TaskScreen';
 import Task from '../screens/TaskScreen';
+import Home from '../screens/HomeScreen';
 
 export default function Navigation() {
   const authorization = useRecoilValue(authorizationState);
@@ -95,7 +96,7 @@ function BottomTabNavigator() {
     >
       <BottomTab.Screen
         name={ROUTES.home}
-        component={HomeScreen}
+        component={Home}
         options={({ navigation, route }: RootTabScreenProps<`${ROUTES.home}`>) => ({
           tabBarIcon: ({ color }) => <TabBarIcon name={ICON_TITLES.home} color={color} />,
           headerRight: () => (
@@ -118,6 +119,7 @@ function BottomTabNavigator() {
       <BottomTab.Screen
         name={ROUTES.learning}
         component={Camera}
+        initialParams={{ cameraScreenOptions: { reachedFromPage: ROUTES.learning } }}
         options={({ navigation, route }: RootTabScreenProps<`${ROUTES.learning}`>) => ({
           navigation,
           route,
@@ -128,6 +130,7 @@ function BottomTabNavigator() {
       <BottomTab.Screen
         name={ROUTES.translate}
         component={Camera}
+        initialParams={{ cameraScreenOptions: { reachedFromPage: ROUTES.translate } }}
         options={({ navigation, route }: RootTabScreenProps<`${ROUTES.translate}`>) => ({
           navigation,
           route,

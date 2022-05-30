@@ -90,6 +90,101 @@ export interface ISign {
   gesture: any;
 }
 
+export const easySigns = [
+  {
+    letterImage: LetterImages['A'],
+    signImage: A_hand,
+    letter: 'A',
+    gesture: HandGesture.aSign,
+  },
+  {
+    letterImage: LetterImages['B'],
+    signImage: B_hand,
+    letter: 'B',
+    gesture: HandGesture.bSign,
+  },
+  {
+    letterImage: LetterImages['C'],
+    signImage: C_hand,
+    letter: 'C',
+    gesture: HandGesture.cSign,
+  },
+  {
+    letterImage: LetterImages['D'],
+    signImage: D_hand,
+    letter: 'D',
+    gesture: HandGesture.dSign,
+  },
+  {
+    letterImage: LetterImages['E'],
+    signImage: E_hand,
+    letter: 'E',
+    gesture: HandGesture.eSign,
+  },
+  {
+    letterImage: LetterImages['K'],
+    signImage: K_hand,
+    letter: 'K',
+    gesture: HandGesture.kSign,
+  },
+  {
+    letterImage: LetterImages['L'],
+    signImage: L_hand,
+    letter: 'L',
+    gesture: HandGesture.lSign,
+  },
+  {
+    letterImage: LetterImages['V'],
+    signImage: V_hand,
+    letter: 'V',
+    gesture: HandGesture.vSign,
+  },
+  {
+    letterImage: LetterImages['W'],
+    signImage: W_hand,
+    letter: 'W',
+    gesture: HandGesture.wSign,
+  },
+];
+export const mediumSigns = [
+  ...easySigns,
+  {
+    letterImage: LetterImages['F'],
+    signImage: F_hand,
+    letter: 'F',
+    gesture: HandGesture.fSign,
+  },
+  {
+    letterImage: LetterImages['I'],
+    signImage: I_hand,
+    letter: 'I',
+    gesture: HandGesture.iSign,
+  },
+  {
+    letterImage: LetterImages['U'],
+    signImage: U_hand,
+    letter: 'U',
+    gesture: HandGesture.uSign,
+  },
+  {
+    letterImage: LetterImages['R'],
+    signImage: R_hand,
+    letter: 'R',
+    gesture: HandGesture.rSign,
+  },
+  {
+    letterImage: LetterImages['S'],
+    signImage: S_hand,
+    letter: 'S',
+    gesture: HandGesture.sSign,
+  },
+  {
+    letterImage: LetterImages['Y'],
+    signImage: Y_hand,
+    letter: 'Y',
+    gesture: HandGesture.ySign,
+  },
+];
 export const Signs = [
   {
     letterImage: LetterImages['A'],

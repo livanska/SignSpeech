@@ -14,7 +14,7 @@ import * as tf from '@tensorflow/tfjs';
 import * as handpose from '@tensorflow-models/handpose';
 import * as fp from 'fingerpose';
 import { cameraWithTensors } from '@tensorflow/tfjs-react-native';
-import { ISign, Signs } from '../handimage';
+import { ISign, Signs, easySigns, mediumSigns } from '../handimage';
 import HandGesture from '../handsigns';
 import Canvas from 'react-native-canvas';
 import { useIsFocused, useNavigationState } from '@react-navigation/core';
@@ -25,6 +25,17 @@ import SvgUri from 'react-native-svg-uri';
 
 import { textStyles } from '../constants/TextStyle';
 
+const levelSignsArray = {
+  easy: easySigns,
+  medium: mediumSigns,
+  hard: Signs,
+};
+
+enum LEVEL_TIMERS {
+  easy = 3000,
+  medium = 40000,
+  hard = 3000,
+}
 export interface ICameraScreenProps {
   reachedFromPage: ROUTES.home | ROUTES.learning | ROUTES.translate;
   exerciseOptions?: IExerciseOptions;
@@ -46,6 +57,10 @@ const Camera = ({ route }) => {
   let requestAnimationFrameId = 0;
   const navigation = useNavigation();
   const [timerValue, setTimerValue] = useState<number | null>(null);
+  const [levelTimerValue, setLevelTimerValue] = useState<number | null>(null);
+  const [levelSigns, setLevelSigns] = useState<ISign[] | null>(
+    levelSignsArray[exerciseOptions?.level] ?? null
+  );
   const [isCameraActive, setIsCameraActive] = useState<boolean>(false);
   const [hasPermission, setHasPermission] = useState<boolean | null>(null);
   const [cameraType, setCameraType] = useState<CameraMode>(CameraMode.front);
@@ -92,15 +107,26 @@ const Camera = ({ route }) => {
           setResult({ allAmount: (exerciseOptions?.timeLimit * 2) | 0, allCorrectAmount: 0 });
         }
 
+        if (exerciseOptions?.level) {
+          setLevelTimerValue(null);
+          setLevelSigns(levelSignsArray[exerciseOptions?.level]);
+          setIsBack(false);
+          setResult({
+            allAmount: levelSignsArray[exerciseOptions?.level].length | 0,
+            allCorrectAmount: 0,
+          });
+        }
+
         await tf.ready().then(() => {
           tf.ENV.set('WEBGL_CONV_IM2COL', false);
-          setRandomSign();
+          exerciseOptions?.level ? setRandomSignForLevel() : setRandomSign();
           canvasRef.current.width = SCREEN_SIZE.width;
           canvasRef.current.height = SCREEN_SIZE.height;
         });
       } else {
         cameraRef = null;
         setTimerValue(0);
+        setLevelTimerValue(0);
         setIsCameraActive(false);
       }
     })();
@@ -153,16 +179,18 @@ const Camera = ({ route }) => {
         }));
         setShouldOverlay(true);
         setTimeout(() => {
-          setRandomSign();
+          exerciseOptions?.level ? setRandomSignForLevel() : setRandomSign();
           setIsCorrectSign(null);
           setShouldOverlay(false);
+          exerciseOptions?.level && setLevelTimerValue(LEVEL_TIMERS[exerciseOptions?.level]);
         }, 2500);
-      } else setIsCorrectSign(false);
+      } else {
+        !exerciseOptions?.level && setIsCorrectSign(false);
+      }
     }
   }, [predictedSigns, currentSign]);
 
   useEffect(() => {
-    console.log(timerValue, result);
     if (timerValue === 0 && result.allAmount > 0 && !isBack) {
       navigation.navigate(ROUTES.result, result);
       setTimerValue(null);
@@ -179,7 +207,46 @@ const Camera = ({ route }) => {
     return () => clearTimeout(timer);
   }, [timerValue]);
 
+  useEffect(() => {
+    console.log(levelTimerValue, result);
+
+    if (result.allAmount > 0 && (!levelSigns || levelSigns.length === 0) && !isBack) {
+      navigation.navigate(ROUTES.result, result);
+      setLevelTimerValue(null);
+      setLevelSigns(null);
+      return;
+    }
+    if (levelTimerValue > 0 && isCorrectSign && levelSigns && !isBack) setLevelTimerValue(0);
+
+    if (levelTimerValue === 0 && !isCorrectSign && levelSigns && !isBack) {
+      setIsCorrectSign(false);
+      if (exerciseOptions?.level) {
+        setShouldOverlay(true);
+        setTimeout(() => {
+          setRandomSignForLevel();
+          setIsCorrectSign(null);
+          setShouldOverlay(false);
+          setLevelTimerValue(LEVEL_TIMERS[exerciseOptions?.level]);
+        }, 2500);
+      }
+    }
+    const timer = setInterval(() => {
+      levelTimerValue > 0 && setLevelTimerValue(levelTimerValue - 1000);
+    }, 1000);
+    if (!levelTimerValue) {
+      return;
+    }
+
+    return () => clearTimeout(timer);
+  }, [levelTimerValue]);
+
   const setRandomSign = () => setCurrentSign(Signs[Math.floor(Math.random() * Signs.length)]);
+
+  const setRandomSignForLevel = () => {
+    let sign = levelSigns[Math.floor(Math.random() * levelSigns?.length)];
+    setLevelSigns(levelSigns?.filter((s: ISign) => s !== sign));
+    setCurrentSign(sign);
+  };
 
   const detect = async (nextImageTensor: any, model: any) => {
     if (!hasPermission || !isCameraActive || !nextImageTensor) return;
@@ -240,7 +307,8 @@ const Camera = ({ route }) => {
   const handleCameraStream = async (images: any) => {
     await prepareTF();
     // Add loading state
-    setTimerValue(exerciseOptions?.timeLimit * 60);
+    exerciseOptions?.timeLimit && setTimerValue(exerciseOptions?.timeLimit * 60);
+    exerciseOptions?.level && setLevelTimerValue(LEVEL_TIMERS[exerciseOptions?.level]);
     const loop = async () => {
       if (model) {
         const nextImageTensor = images.next().value;
@@ -287,7 +355,15 @@ const Camera = ({ route }) => {
         resizeWidth={tensorDims.width}
       />
       <Canvas ref={canvasRef} style={styles.canvasComponent} />
-      <View style={[styles.blinkOverlay, { opacity: +shouldOverlay - 0.8 }]} />
+      <View
+        style={[
+          styles.blinkOverlay,
+          {
+            backgroundColor: isCorrectSign ? COLORS.success : COLORS.fail,
+            opacity: +shouldOverlay - 0.8,
+          },
+        ]}
+      />
       <View style={styles.overlayInfoContainer}>
         <View style={styles.topRowContainer}>
           <BackButton
@@ -296,16 +372,36 @@ const Camera = ({ route }) => {
               navigation.navigate(ROUTES.root, { screen: ROUTES.home });
             }}
           />
-          {timerValue !== null && (
+          {exerciseOptions?.timeLimit && timerValue !== null && (
             <GlassPanel height={40} width={100} style={{}}>
               <Text style={textStyles.heading}>{toTimeString(timerValue)}</Text>
             </GlassPanel>
+          )}
+          {exerciseOptions?.level && (
+            <View
+              style={{
+                flexDirection: 'column',
+              }}
+            >
+              <GlassPanel height={80} width={100} style={{}}>
+                <Text style={textStyles.heading}>
+                  {exerciseOptions.level.toUpperCase()}
+                  {'\n'}
+                  <Text style={textStyles.heading}>{`00:${+levelTimerValue / 1000 > 9 ? '' : '0'}${
+                    levelTimerValue / 1000
+                  }`}</Text>
+                </Text>
+              </GlassPanel>
+            </View>
           )}
           <View style={styles.signContainer}>
             <GlassPanel height={160} width={135} style={{}} onPress={handleCameraTypeChange}>
               <View style={styles.glassPanelContent}>
                 {/* Should be */}
-                {/* {reachedFromPage === ROUTES.learning && currentSign?.signImage && <SignImage />} */}
+                {reachedFromPage === ROUTES.learning &&
+                  !exerciseOptions.level &&
+                  !exerciseOptions.timeLimit &&
+                  currentSign?.signImage && <SignImage />}
                 {/* Testing only */}
                 {/* {currentSign?.signImage && <SignImage />} */}
                 <Text style={[textStyles.default, { fontSize: 52 }]}>{currentSign?.letter}</Text>
@@ -357,7 +453,6 @@ const styles = StyleSheet.create({
     width: '100%',
     height: '100%',
     zIndex: 10,
-    backgroundColor: COLORS.success,
     flex: 0,
     // opacity: 0.2,
   },
