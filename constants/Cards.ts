@@ -19,6 +19,7 @@ export interface IExerciseCardProps extends ICardProps {
   exerciseType: EXERCISE_TYPE;
   timeLimit?: TIME_LIMIT;
   level?: LEVEL;
+  sentence?: string;
 }
 
 export interface IVideoCardProps extends ICardProps {
@@ -31,8 +32,9 @@ export enum CARD_TYPE {
 }
 
 export enum EXERCISE_TYPE {
-  SpeedTest = 'Speed Test',
-  StepByStep = 'Step By Step',
+  speedTest = 'Speed Test',
+  stepByStep = 'Step By Step',
+  dailyChallenge = 'Daily Challenge',
 }
 
 export enum TRANSLATION_TYPE {
@@ -72,9 +74,9 @@ export enum LEVEL_CARD_IMAGE {
 
 export const getCardImage = ({ exerciseType, ...params }: IExerciseCardProps): CARD_IMAGE => {
   switch (exerciseType) {
-    case EXERCISE_TYPE.SpeedTest:
+    case EXERCISE_TYPE.speedTest:
       return SPEED_CARD_IMAGE[TIME_LIMIT[params.timeLimit]];
-    case EXERCISE_TYPE.StepByStep:
+    case EXERCISE_TYPE.stepByStep:
       return LEVEL_CARD_IMAGE[LEVEL[params.level]];
     default:
       return params.translation === TRANSLATION_TYPE.signsToText

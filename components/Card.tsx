@@ -6,7 +6,7 @@ import { useNavigation } from '@react-navigation/native';
 import { getCardImage, IExerciseCardProps, TRANSLATION_TYPE } from '../constants/Cards';
 
 const Card = (props: IExerciseCardProps) => {
-  const { title, timeLimit, level, translation } = props;
+  const { title, timeLimit, level, translation, sentence } = props;
   const navigation = useNavigation();
   return (
     <TouchableHighlight
@@ -22,6 +22,7 @@ const Card = (props: IExerciseCardProps) => {
                 exerciseOptions: {
                   timeLimit: timeLimit,
                   level: level,
+                  sentence: sentence,
                 },
               },
             })

@@ -36,6 +36,8 @@ enum LEVEL_TIMERS {
   medium = 40000,
   hard = 3000,
 }
+
+const defaultTimerValue = 40000;
 export interface ICameraScreenProps {
   reachedFromPage: ROUTES.home | ROUTES.learning | ROUTES.translate;
   exerciseOptions?: IExerciseOptions;
@@ -43,12 +45,31 @@ export interface ICameraScreenProps {
 export interface IExerciseOptions {
   timeLimit?: TIME_LIMIT;
   level?: LEVEL;
+  sentence?: string;
 }
 
 enum CameraMode {
   back = 1,
   front = 2,
 }
+
+const textureDims =
+  Platform.OS === 'ios' ? { width: 1080, height: 1920 } : { width: 1600, height: 1200 };
+const tensorDims = { width: 152, height: 200 };
+
+const joints = {
+  thumb: [0, 1, 2, 3, 4],
+  index: [0, 5, 6, 7, 8],
+  mid: [0, 9, 10, 11, 12],
+  ring: [0, 13, 14, 15, 16],
+  pinky: [0, 17, 18, 19, 20],
+};
+
+const getSignsFromSentence = (sentence: string): ISign[] | null =>
+  sentence
+    ?.split('')
+    .filter((letter: string) => letter && letter.match(/^[A-Za-z]+$/))
+    .map((letter: string) => Signs.find((sign: ISign) => sign.letter === letter.toUpperCase()));
 
 const TensorCamera = cameraWithTensors(CameraComponent);
 
@@ -58,8 +79,12 @@ const Camera = ({ route }) => {
   const navigation = useNavigation();
   const [timerValue, setTimerValue] = useState<number | null>(null);
   const [levelTimerValue, setLevelTimerValue] = useState<number | null>(null);
+  const [sentenceTimerValue, setSentenceTimerValue] = useState<number | null>(null);
   const [levelSigns, setLevelSigns] = useState<ISign[] | null>(
     levelSignsArray[exerciseOptions?.level] ?? null
+  );
+  const [sentenceSigns, setSentenceSigns] = useState<ISign[] | null>(
+    getSignsFromSentence(exerciseOptions?.sentence) ?? null
   );
   const [isCameraActive, setIsCameraActive] = useState<boolean>(false);
   const [hasPermission, setHasPermission] = useState<boolean | null>(null);
@@ -69,28 +94,16 @@ const Camera = ({ route }) => {
   const [isCorrectSign, setIsCorrectSign] = useState<boolean | null>(null);
   const [shouldOverlay, setShouldOverlay] = useState<boolean | null>(false);
   const [isBack, setIsBack] = useState<boolean>(false);
+  const [isLastSign, setIsLastSign] = useState<boolean>(false);
   const [result, setResult] = useState<IResultScreenProps>({
-    allAmount: (exerciseOptions?.timeLimit * 2) | 0,
+    allAmount: 0,
     allCorrectAmount: 0,
   });
   const isFocusedScreen: boolean = useIsFocused();
-
   let cameraRef = useRef(null);
   const canvasRef = useRef(null);
   let model: any;
   let GE: any;
-
-  const textureDims =
-    Platform.OS === 'ios' ? { width: 1080, height: 1920 } : { width: 1600, height: 1200 };
-  const tensorDims = { width: 152, height: 200 };
-
-  const joints = {
-    thumb: [0, 1, 2, 3, 4],
-    index: [0, 5, 6, 7, 8],
-    mid: [0, 9, 10, 11, 12],
-    ring: [0, 13, 14, 15, 16],
-    pinky: [0, 17, 18, 19, 20],
-  };
 
   useEffect(() => {
     (async () => {
@@ -100,37 +113,58 @@ const Camera = ({ route }) => {
           setHasPermission(status === 'granted');
         }
         setIsCameraActive(true);
-
-        if (exerciseOptions?.timeLimit) {
-          setTimerValue(null);
+        if (reachedFromPage === ROUTES.home) {
           setIsBack(false);
-          setResult({ allAmount: (exerciseOptions?.timeLimit * 2) | 0, allCorrectAmount: 0 });
+          if (exerciseOptions?.timeLimit) {
+            setTimerValue(null);
+            setResult({ allAmount: (exerciseOptions?.timeLimit * 2) | 0, allCorrectAmount: 0 });
+          }
+          if (exerciseOptions?.level) {
+            setLevelTimerValue(null);
+            setLevelSigns(levelSignsArray[exerciseOptions?.level]);
+            setResult({
+              allAmount: levelSignsArray[exerciseOptions?.level].length | 0,
+              allCorrectAmount: 0,
+            });
+          }
+          if (exerciseOptions?.sentence) {
+            setIsLastSign(false);
+            setSentenceTimerValue(null);
+            setSentenceSigns(getSignsFromSentence(exerciseOptions?.sentence));
+            setResult({
+              allAmount: getSignsFromSentence(exerciseOptions?.sentence).length | 0,
+              allCorrectAmount: 0,
+            });
+          }
         }
-
-        if (exerciseOptions?.level) {
-          setLevelTimerValue(null);
-          setLevelSigns(levelSignsArray[exerciseOptions?.level]);
-          setIsBack(false);
-          setResult({
-            allAmount: levelSignsArray[exerciseOptions?.level].length | 0,
-            allCorrectAmount: 0,
-          });
-        }
-
         await tf.ready().then(() => {
           tf.ENV.set('WEBGL_CONV_IM2COL', false);
-          exerciseOptions?.level ? setRandomSignForLevel() : setRandomSign();
           canvasRef.current.width = SCREEN_SIZE.width;
           canvasRef.current.height = SCREEN_SIZE.height;
         });
+        getNextRandomSign();
       } else {
         cameraRef = null;
-        setTimerValue(0);
-        setLevelTimerValue(0);
+        exerciseOptions?.timeLimit && setTimerValue(0);
+        exerciseOptions?.level && setLevelTimerValue(0);
+        exerciseOptions?.sentence && setSentenceTimerValue(0);
+        setIsCorrectSign(null);
+        setCurrentSign(null);
         setIsCameraActive(false);
+        exerciseOptions?.sentence && setSentenceSigns(null);
       }
     })();
   }, [isFocusedScreen]);
+
+  const getNextRandomSign = () => {
+    if (exerciseOptions?.level) {
+      setRandomSignForLevel();
+    } else if (exerciseOptions?.sentence) {
+      setSignOfSentence();
+    } else {
+      setRandomSign();
+    }
+  };
 
   useEffect(() => {
     setHasPermission(isCameraActive);
@@ -179,13 +213,17 @@ const Camera = ({ route }) => {
         }));
         setShouldOverlay(true);
         setTimeout(() => {
-          exerciseOptions?.level ? setRandomSignForLevel() : setRandomSign();
+          getNextRandomSign();
           setIsCorrectSign(null);
           setShouldOverlay(false);
           exerciseOptions?.level && setLevelTimerValue(LEVEL_TIMERS[exerciseOptions?.level]);
+          exerciseOptions?.sentence && setSentenceTimerValue(defaultTimerValue);
         }, 2500);
       } else {
-        !exerciseOptions?.level && setIsCorrectSign(false);
+        !exerciseOptions?.level &&
+          !exerciseOptions?.timeLimit &&
+          !exerciseOptions?.sentence &&
+          setIsCorrectSign(false);
       }
     }
   }, [predictedSigns, currentSign]);
@@ -208,8 +246,6 @@ const Camera = ({ route }) => {
   }, [timerValue]);
 
   useEffect(() => {
-    console.log(levelTimerValue, result);
-
     if (result.allAmount > 0 && (!levelSigns || levelSigns.length === 0) && !isBack) {
       navigation.navigate(ROUTES.result, result);
       setLevelTimerValue(null);
@@ -240,12 +276,57 @@ const Camera = ({ route }) => {
     return () => clearTimeout(timer);
   }, [levelTimerValue]);
 
+  useEffect(() => {
+    if (
+      result.allAmount > 0 &&
+      (!sentenceSigns || sentenceSigns.length === 0) &&
+      isLastSign &&
+      !isBack
+    ) {
+      navigation.navigate(ROUTES.result, result);
+      setSentenceTimerValue(null);
+      setSentenceSigns(null);
+      setIsCorrectSign(null);
+      return;
+    }
+    if (sentenceTimerValue > 0 && isCorrectSign && sentenceSigns && !isBack) {
+      setSentenceTimerValue(0);
+    }
+    if (sentenceTimerValue === 0 && !isCorrectSign && sentenceSigns && !isBack) {
+      setIsCorrectSign(false);
+      if (exerciseOptions?.sentence) {
+        setShouldOverlay(true);
+        setTimeout(() => {
+          getNextRandomSign();
+          setIsCorrectSign(null);
+          setShouldOverlay(false);
+          setSentenceTimerValue(defaultTimerValue);
+        }, 2500);
+      }
+    }
+    const timer = setInterval(() => {
+      sentenceTimerValue > 0 && setSentenceTimerValue(sentenceTimerValue - 1000);
+    }, 1000);
+    if (!sentenceTimerValue) {
+      return;
+    }
+
+    return () => clearTimeout(timer);
+  }, [sentenceTimerValue]);
+
   const setRandomSign = () => setCurrentSign(Signs[Math.floor(Math.random() * Signs.length)]);
 
   const setRandomSignForLevel = () => {
     let sign = levelSigns[Math.floor(Math.random() * levelSigns?.length)];
     setLevelSigns(levelSigns?.filter((s: ISign) => s !== sign));
     setCurrentSign(sign);
+  };
+
+  const setSignOfSentence = () => {
+    let [first, ...newSigns] = sentenceSigns;
+    setSentenceSigns(newSigns);
+    setIsLastSign(newSigns.length === 0 && !first);
+    setCurrentSign(first || null);
   };
 
   const detect = async (nextImageTensor: any, model: any) => {
@@ -309,6 +390,9 @@ const Camera = ({ route }) => {
     // Add loading state
     exerciseOptions?.timeLimit && setTimerValue(exerciseOptions?.timeLimit * 60);
     exerciseOptions?.level && setLevelTimerValue(LEVEL_TIMERS[exerciseOptions?.level]);
+    exerciseOptions?.sentence && setSentenceTimerValue(defaultTimerValue);
+    exerciseOptions?.sentence && !currentSign && getNextRandomSign();
+
     const loop = async () => {
       if (model) {
         const nextImageTensor = images.next().value;
@@ -384,12 +468,29 @@ const Camera = ({ route }) => {
               }}
             >
               <GlassPanel height={80} width={100} style={{}}>
-                <Text style={textStyles.heading}>
+                <Text style={[textStyles.heading, { textAlign: 'center' }]}>
                   {exerciseOptions.level.toUpperCase()}
                   {'\n'}
                   <Text style={textStyles.heading}>{`00:${+levelTimerValue / 1000 > 9 ? '' : '0'}${
                     levelTimerValue / 1000
                   }`}</Text>
+                </Text>
+              </GlassPanel>
+            </View>
+          )}
+          {exerciseOptions?.sentence && (
+            <View
+              style={{
+                flexDirection: 'column',
+              }}
+            >
+              <GlassPanel height={80} width={150} style={{}}>
+                <Text style={[textStyles.heading, { textAlign: 'center' }]}>
+                  {exerciseOptions.sentence}
+                  {'\n'}
+                  <Text style={textStyles.heading}>{`00:${
+                    +sentenceTimerValue / 1000 > 9 ? '' : '0'
+                  }${sentenceTimerValue / 1000}`}</Text>
                 </Text>
               </GlassPanel>
             </View>
