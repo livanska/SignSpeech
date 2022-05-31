@@ -22,14 +22,14 @@ export interface ILinkProps {
 const Link = ({ linkText, preLinkText, isHeading, onPress }: ILinkProps) => {
   return (
     <View style={styles.linkContainer}>
-      <TouchableWithoutFeedback style={{}} onPress={onPress}>
+      <TouchableHighlight underlayColor={COLORS.transparent} onPress={onPress}>
         <Text style={isHeading ? textStyles.headingLink : textStyles.link}>
           <Text
             style={isHeading ? textStyles.heading : textStyles.default}
           >{`${preLinkText} `}</Text>
           {linkText}
         </Text>
-      </TouchableWithoutFeedback>
+      </TouchableHighlight>
     </View>
   );
 };

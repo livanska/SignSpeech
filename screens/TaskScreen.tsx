@@ -74,7 +74,7 @@ const Task = ({ route }) => {
   const shuffleArray = (signs: ISign[]): ISign[] => signs.sort((a, b) => 0.5 - Math.random());
 
   const setRandomSignAndAnswers = () => {
-    const arrayToGetSigns = Signs.filter((sign: ISign) => sign.letter !== currentSign.letter);
+    const arrayToGetSigns = Signs.filter((sign: ISign) => sign.letter !== currentSign?.letter);
     const current = arrayToGetSigns[Math.floor(Math.random() * arrayToGetSigns.length)];
     setCurrentSign(current);
     setAnswerVariantSigns(
@@ -115,11 +115,11 @@ const Task = ({ route }) => {
           textStyle={{
             fontSize: 24,
             includeFontPadding: false,
-            fontFamily: FONT_TYPES.regular,
+            fontFamily: FONT_TYPES.light,
             color: COLORS.white,
           }}
           color={COLORS.white}
-          overlayColor={'rgba(0, 0, 0, 0.25)'}
+          overlayColor={'rgba(0, 0, 0, 0.5)'}
         />
       )}
       <View style={styles.topRow}>

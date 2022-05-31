@@ -31,13 +31,14 @@ const levelSignsArray = {
   hard: Signs,
 };
 
+const defaultTimerValue = 30000;
+
 enum LEVEL_TIMERS {
-  easy = 3000,
-  medium = 40000,
-  hard = 3000,
+  easy = 45000,
+  medium = defaultTimerValue,
+  hard = 10000,
 }
 
-const defaultTimerValue = 40000;
 export interface ICameraScreenProps {
   reachedFromPage: ROUTES.home | ROUTES.learning | ROUTES.translate;
   exerciseOptions?: IExerciseOptions;
@@ -469,11 +470,11 @@ const Camera = ({ route }) => {
           textStyle={{
             fontSize: 24,
             includeFontPadding: false,
-            fontFamily: FONT_TYPES.regular,
+            fontFamily: FONT_TYPES.light,
             color: COLORS.white,
           }}
           color={COLORS.white}
-          overlayColor={'rgba(0, 0, 0, 0.25)'}
+          overlayColor={'rgba(0, 0, 0, 0.5)'}
         />
       )}
       {reachedFromPage !== ROUTES.translate && (
