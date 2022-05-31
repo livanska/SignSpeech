@@ -116,10 +116,10 @@ const Authorization = () => {
           isAuthorized: true,
         }));
       } else {
-        setError(AUTH_ERROR.serverError);
+        setError(AUTH_ERROR.incorrectData);
       }
     } catch (error) {
-      setError(AUTH_ERROR.incorrectData);
+      setError(AUTH_ERROR.serverError);
     }
   };
 
