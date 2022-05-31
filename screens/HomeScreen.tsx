@@ -35,8 +35,8 @@ export const items = [
     type: CARD_TYPE.exercise,
   },
   {
-    title: 'Sign Learning',
-    translation: TRANSLATION_TYPE.signsToText,
+    title: 'Sign Translating',
+    translation: TRANSLATION_TYPE.textToSign,
     exerciseType: EXERCISE_TYPE.speedTest,
     timeLimit: TIME_LIMIT.min7,
     type: CARD_TYPE.exercise,
@@ -135,15 +135,10 @@ const rowMockStepByStep = {
 };
 
 const rowMockVideo = {
-  title: 'Video Learning',
+  title: 'Video learning',
   subtitle: 'Improve your knowledge with the help of world-known teachers',
   items: itemsVideo,
 };
-// const linkData: Partial<ILinkProps> = {
-//   isHeading: true,
-//   preLinkText: 'Still don’t know how to show your speech to deaf audience?',
-//   linkText: 'Learn now!',
-// };
 
 const Home = () => {
   const navigation = useNavigation();

@@ -10,12 +10,6 @@ import { AppRegistry, Platform } from 'react-native';
 
 export default function App() {
   const isLoadingComplete = useCachedResources();
-  // const [fontsLoaded] = useFonts({
-  //   Icon: require("./assets/fonts/icons.ttf"),
-  // });
-  // if (!fontsLoaded) {
-  //   return <AppLoading />;
-  // }
   if (!isLoadingComplete) {
     return null;
   } else {

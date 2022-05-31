@@ -1,4 +1,4 @@
-import { StyleSheet, Text, View, StatusBar } from 'react-native';
+import { StyleSheet, Text, View } from 'react-native';
 import { useIsFocused, useNavigation } from '@react-navigation/core';
 import { ROUTES } from '../navigation/routes';
 import { COLORS } from '../constants/Colors';
@@ -74,12 +74,13 @@ const Task = ({ route }) => {
   const shuffleArray = (signs: ISign[]): ISign[] => signs.sort((a, b) => 0.5 - Math.random());
 
   const setRandomSignAndAnswers = () => {
-    const current = Signs[Math.floor(Math.random() * Signs.length)];
+    const arrayToGetSigns = Signs.filter((sign: ISign) => sign.letter !== currentSign.letter);
+    const current = arrayToGetSigns[Math.floor(Math.random() * arrayToGetSigns.length)];
     setCurrentSign(current);
     setAnswerVariantSigns(
       shuffleArray([
         current,
-        ...shuffleArray(Signs.filter((sign: ISign) => sign !== current)).slice(0, 5),
+        ...shuffleArray(arrayToGetSigns.filter((sign: ISign) => sign !== current)).slice(0, 5),
       ])
     );
   };
@@ -101,8 +102,8 @@ const Task = ({ route }) => {
     }, 1000);
   };
 
-  //   const SignImage = currentSign?.signImage;
-  const SignImage = Signs[0]?.signImage;
+  const SignImage = currentSign?.signImage;
+
   return (
     <View style={styles.taskContainer}>
       {isLoading && (
@@ -186,7 +187,7 @@ const styles = StyleSheet.create({
     display: 'flex',
     alignContent: 'center',
     textAlign: 'center',
-    marginBottom: 20,
+    marginBottom: 30,
   },
   signImage: {
     alignItems: 'center',
@@ -210,7 +211,7 @@ const styles = StyleSheet.create({
   },
   statusCircle: {
     position: 'absolute',
-    bottom: -50,
+    bottom: -40,
     right: 0,
   },
 });

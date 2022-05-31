@@ -396,7 +396,7 @@ const Camera = ({ route }) => {
     exerciseOptions?.timeLimit && setTimerValue(exerciseOptions?.timeLimit * 60);
     exerciseOptions?.level && setLevelTimerValue(LEVEL_TIMERS[exerciseOptions?.level]);
     exerciseOptions?.sentence && setSentenceTimerValue(defaultTimerValue);
-    exerciseOptions?.sentence && !currentSign && getNextRandomSign();
+    (exerciseOptions?.sentence || exerciseOptions?.level) && !currentSign && getNextRandomSign();
 
     const loop = async () => {
       if (model) {
@@ -448,14 +448,13 @@ const Camera = ({ route }) => {
         <View
           style={{
             position: 'absolute',
-            // alignItems: 'center',
+            alignItems: 'center',
             height: '100%',
             width: '100%',
             display: 'flex',
             justifyContent: 'center',
             zIndex: 10,
             flex: 0,
-            marginLeft: 0,
           }}
         >
           <SignImage height={600} width={300} />
@@ -498,7 +497,7 @@ const Camera = ({ route }) => {
           />
           {exerciseOptions?.timeLimit && timerValue !== null && (
             <GlassPanel height={40} width={100} style={{}}>
-              <Text style={textStyles.heading}>{toTimeString(timerValue)}</Text>
+              {currentSign && <Text style={textStyles.heading}>{toTimeString(timerValue)}</Text>}
             </GlassPanel>
           )}
           {exerciseOptions?.level && (
@@ -511,9 +510,11 @@ const Camera = ({ route }) => {
                 <Text style={[textStyles.heading, { textAlign: 'center' }]}>
                   {exerciseOptions?.level.toUpperCase()}
                   {'\n'}
-                  <Text style={textStyles.heading}>{`00:${+levelTimerValue / 1000 > 9 ? '' : '0'}${
-                    levelTimerValue / 1000
-                  }`}</Text>
+                  {currentSign && (
+                    <Text style={textStyles.heading}>{`00:${
+                      +levelTimerValue / 1000 > 9 ? '' : '0'
+                    }${levelTimerValue / 1000}`}</Text>
+                  )}
                 </Text>
               </GlassPanel>
             </View>

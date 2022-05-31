@@ -1,33 +1,6 @@
 import { Finger, FingerCurl, FingerDirection, GestureDescription } from 'fingerpose';
 
 export const aSign = new GestureDescription('A');
-// [
-//     [
-//       "Thumb",
-//       "No Curl",
-//       "Diagonal Up Right"
-//     ],
-//     [
-//       "Index",
-//       "Full Curl",
-//       "Vertical Up"
-//     ],
-//     [
-//       "Middle",
-//       "Full Curl",
-//       "Vertical Up"
-//     ],
-//     [
-//       "Ring",
-//       "Full Curl",
-//       "Vertical Up"
-//     ],
-//     [
-//       "Pinky",
-//       "Full Curl",
-//       "Diagonal Up Left"
-//     ]
-//   ]
 
 //Thumb
 aSign.addCurl(Finger.Thumb, FingerCurl.NoCurl, 1.0);
