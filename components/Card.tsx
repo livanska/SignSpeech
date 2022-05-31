@@ -1,4 +1,12 @@
-import { StyleSheet, Text, View, Image, ImageBackground, TouchableHighlight } from 'react-native';
+import {
+  StyleSheet,
+  Text,
+  View,
+  Image,
+  ImageBackground,
+  TouchableHighlight,
+  TouchableOpacity,
+} from 'react-native';
 import { COLORS } from '../constants/Colors';
 import { FONT_TYPES } from '../constants/Enums';
 import { ROUTES } from '../navigation/routes';
@@ -11,8 +19,8 @@ const Card = (props: IExerciseCardProps) => {
   return (
     <TouchableHighlight
       style={styles.cardContainer}
-      activeOpacity={0.5}
-      underlayColor={COLORS.primaryDark}
+      activeOpacity={0.8}
+      underlayColor={COLORS.black}
       onPress={() =>
         translation === TRANSLATION_TYPE.signsToText
           ? navigation.navigate(ROUTES.signTask, {
