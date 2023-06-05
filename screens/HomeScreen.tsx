@@ -14,10 +14,8 @@ import { useRecoilState, useSetRecoilState } from 'recoil';
 import { screenState } from '../state/atoms';
 import { ICON_TITLES } from '../constants/Enums';
 
-const internationalSignText =
-  'International Sign (IS) is a contact variety of sign language used in a variety of different contexts, particularly at international meetings such as the World Federation of the Deaf (WFD) congress, events such as the Deaflympics, in video clips produced by Deaf people and watched by other Deaf people from around the world, and informally when travelling and socialising. ';
-const preButtonText =
-  'Your sign talking level isn’t good enought but need to understand your companion?';
+import useLocale from '../hooks/useLocale';
+import { APP_STRINGS, IAppStrings } from '../strings';
 
 export const items = [
   {
@@ -104,7 +102,7 @@ export const itemsDaily = [
 
 export const itemsVideo = [
   {
-    videoId: 'tkMg8g8vVUo',
+    videoId: 'tkMg8g8vVUo', //j9nSMjAywfg
     type: CARD_TYPE.video,
   },
   {
@@ -116,33 +114,28 @@ export const itemsVideo = [
     type: CARD_TYPE.video,
   },
 ];
-const rowMockspeedTest = {
-  title: 'Speed Test',
-  subtitle: 'Try to translate as many letters as you can in limited time',
-  items: items,
-};
-
-const rowMockDailyChallenge = {
-  title: 'Daily challenge',
-  subtitle: 'Learn common phrases every day to communicate with deaf friends easier',
-  items: itemsDaily,
-};
-
-const rowMockStepByStep = {
-  title: 'Step By Step',
-  subtitle: 'Start training from the easiest letters to the hardest ones',
-  items: itemsStep,
-};
-
-const rowMockVideo = {
-  title: 'Video learning',
-  subtitle: 'Improve your knowledge with the help of world-known teachers',
-  items: itemsVideo,
-};
 
 const Home = () => {
   const navigation = useNavigation();
   const [screen, setScreen] = useRecoilState(screenState);
+
+  const { locale } = useLocale();
+  const { HOME }: IAppStrings = APP_STRINGS[locale];
+
+  const rowMockspeedTest = {
+    ...HOME.rowMockspeedTest,
+    items: items,
+  };
+
+  const rowMockDailyChallenge = {
+    ...HOME.rowMockDailyChallenge,
+    items: itemsDaily,
+  };
+
+  const rowMockStepByStep = {
+    ...HOME.rowMockStepByStep,
+    items: itemsStep,
+  };
 
   const closeModal = (): void => {
     setScreen((prev: IScreen) => ({
@@ -157,7 +150,7 @@ const Home = () => {
         <View style={styles.modalContainer}>
           <View style={styles.modalTextContainer}>
             <Text style={textStyles.heading}>Help</Text>
-            <Text style={textStyles.subtitle}>{internationalSignText}</Text>
+            <Text style={textStyles.subtitle}>{HOME.internationalSignText}</Text>
           </View>
           <Image style={styles.modalImage} source={require('../assets/images/signs.jpg')} />
           <View style={styles.buttonsRow}>
@@ -187,12 +180,12 @@ const Home = () => {
         />
         <TitleRow {...rowMockspeedTest} />
         <TitleRow {...rowMockStepByStep} />
-        <TitleRow {...rowMockVideo} />
+        <TitleRow {...HOME.rowMockVideo} />
         <View style={styles.actionContainer}>
-          <Text style={[textStyles.heading, { textAlign: 'center' }]}>{preButtonText}</Text>
+          <Text style={[textStyles.heading, { textAlign: 'center' }]}>{HOME.preButtonText}</Text>
           <View style={styles.buttonContainer}>
             <GradientButton
-              title="Translate"
+              title={HOME.translateButtonText}
               onPress={() => navigation.navigate(ROUTES.root, { screen: ROUTES.translate })}
             />
           </View>
