@@ -34,7 +34,7 @@ const Task = ({ route }) => {
   const navigation = useNavigation();
 
   const { locale } = useLocale();
-  const { LOADING }: IAppStrings = APP_STRINGS[locale];
+  const { LOADING, TASK }: IAppStrings = APP_STRINGS[locale];
 
   useEffect(() => {
     if (timerValue === 0 && result.allAmount && !isBack) {
@@ -144,7 +144,7 @@ const Task = ({ route }) => {
         )}
       </View>
       <View style={styles.taskInfo}></View>
-      <Text style={[textStyles.rowHeading, { marginBottom: 15 }]}>Which letter is it?</Text>
+      <Text style={[textStyles.rowHeading, { marginBottom: 15 }]}>{TASK.title}</Text>
       <View style={styles.signImageCircle}>
         <View style={styles.signImage}>
           {currentSign?.signImage && !isLoading && <SignImage width={154} stroke={'#000000'} />}

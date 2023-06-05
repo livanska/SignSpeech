@@ -57,6 +57,9 @@ export interface IAppStrings {
       confirmPassword: string;
     };
   };
+  TASK: {
+    title: string;
+  };
   PROFILE: {
     modal: {
       title: string;
@@ -143,6 +146,9 @@ export const APP_STRINGS = {
         confirmPassword: 'confirmar senha',
       },
     },
+    TASK: {
+      title: 'Qual letra é essa?',
+    },
     PROFILE: {
       modal: {
         title: 'Editar informações pessoais',
@@ -224,6 +230,9 @@ export const APP_STRINGS = {
         profileImage: 'profileImage',
         confirmPassword: 'confirmPassword',
       },
+    },
+    TASK: {
+      title: 'Which letter is it?',
     },
     PROFILE: {
       modal: {
