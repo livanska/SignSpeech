@@ -1,4 +1,4 @@
-import { StyleSheet, Text, View, Image, TextInput } from 'react-native';
+import { StyleSheet, Text, View, Image, TextInput, Alert } from 'react-native';
 import { COLORS } from '../constants/Colors';
 import { FONT_TYPES } from '../constants/Enums';
 import { textStyles } from '../constants/TextStyle';
@@ -9,13 +9,15 @@ import { useSetRecoilState } from 'recoil';
 import { authorizationState, userState } from '../state/atoms';
 import { IAuthorization, IUser, USER_PROPS } from '../state/types';
 import { authorizeUser } from '../firebase/user';
+import useLocale from '../hooks/useLocale';
+import { APP_STRINGS, IAppStrings } from '../strings';
 
-enum AUTH_ERROR {
-  passwordMatch = "Passwords don't match!",
-  emptyFields = 'Fill in all the fields!',
-  invalidEmail = 'Provide valid email address!',
-  incorrectData = 'Incorrect email address or password, please try again.',
-  serverError = 'Something went wrong, please try again later.',
+interface IAUTH_ERROR {
+  passwordMatch: string;
+  emptyFields: string;
+  invalidEmail: string;
+  incorrectData: string;
+  serverError: string;
 }
 
 enum AUTH_PAGE_TYPE {
@@ -37,32 +39,27 @@ export interface IUserRegisterInput extends IUserInput {
 }
 
 const userDefaultInputsValues: IUserRegisterInput = {
-  email: '',
-  password: '',
+  email: 'yury_regis@hotmail.com',
+  password: '010203',
   confirmPassword: '',
   fullName: '',
 };
 
-const pageProps = {
-  register: {
-    preLinkText: 'Already have an account?',
-    linkText: 'Sign in!',
-    buttonTitle: 'Register',
-  },
-  login: {
-    preLinkText: 'Don`t have an account?',
-    linkText: 'Register!',
-    buttonTitle: 'Sign in',
-  },
-};
-
 const Authorization = () => {
   const [pageType, setPageType] = useState<AUTH_PAGE_TYPE>(AUTH_PAGE_TYPE.login);
-  const [pageTypeProps, setPageTypeProps] = useState<IPageProps>(pageProps.login);
   const [inputValues, setInputValues] = useState<IUserRegisterInput>(userDefaultInputsValues);
   const setUser = useSetRecoilState(userState);
   const setAuthorization = useSetRecoilState(authorizationState);
-  const [error, setError] = useState<AUTH_ERROR | null>(null);
+  const [error, setError] = useState<IAUTH_ERROR | null>(null);
+
+  const { locale } = useLocale();
+  const { AUTH: AUTH_STRINGS }: IAppStrings = APP_STRINGS[locale];
+  const [pageTypeProps, setPageTypeProps] = useState<IPageProps>(AUTH_STRINGS.login);
+
+  const pageProps = {
+    register: AUTH_STRINGS.register,
+    login: AUTH_STRINGS.login,
+  };
 
   useEffect(() => {
     setPageTypeProps(pageProps[pageType]);
@@ -70,10 +67,10 @@ const Authorization = () => {
     setError(null);
   }, [pageType]);
 
+  const isLogin = (): boolean => pageType === AUTH_PAGE_TYPE.login;
+
   const togglePageType = (): void =>
     setPageType(isLogin() ? AUTH_PAGE_TYPE.register : AUTH_PAGE_TYPE.login);
-
-  const isLogin = (): boolean => pageType === AUTH_PAGE_TYPE.login;
 
   const handleInputChange = (input: string, valuePropName: string): void => {
     setInputValues((prevValues: IUserRegisterInput) => ({
@@ -81,14 +78,14 @@ const Authorization = () => {
       [valuePropName as keyof typeof inputValues]: input,
     }));
     if (
-      (valuePropName === USER_PROPS.password &&
+      (valuePropName === AUTH_STRINGS.userProps.password &&
         inputValues.confirmPassword &&
         input !== inputValues.confirmPassword) ||
-      (valuePropName === USER_PROPS.confirmPassword &&
+      (valuePropName === AUTH_STRINGS.userProps.confirmPassword &&
         inputValues.password &&
         input !== inputValues.password)
     ) {
-      setError(AUTH_ERROR.passwordMatch);
+      setError(AUTH_STRINGS.error.passwordMatch as unknown as IAUTH_ERROR);
     } else setError(null);
   };
 
@@ -99,7 +96,7 @@ const Authorization = () => {
     }
 
     if (Object.values(inputValues).includes('')) {
-      setError(AUTH_ERROR.emptyFields);
+      setError(AUTH_STRINGS.error.emptyFields as unknown as IAUTH_ERROR);
       return;
     }
 
@@ -116,10 +113,10 @@ const Authorization = () => {
           isAuthorized: true,
         }));
       } else {
-        setError(AUTH_ERROR.incorrectData);
+        setError(AUTH_STRINGS.error.incorrectData as unknown as IAUTH_ERROR);
       }
     } catch (error) {
-      setError(AUTH_ERROR.serverError);
+      setError(AUTH_STRINGS.error.serverError as unknown as IAUTH_ERROR);
     }
   };
 
@@ -130,7 +127,7 @@ const Authorization = () => {
         <Text style={styles.logoText}>SignSpeech</Text>
       </View>
       <View style={styles.formContainer}>
-        <Text style={textStyles.subtitle}>We all love in the same language.</Text>
+        <Text style={textStyles.subtitle}>{AUTH_STRINGS.slogam}</Text>
         <View style={styles.inputsContainer}>
           <TextInput
             style={textStyles.input}
@@ -138,7 +135,7 @@ const Authorization = () => {
             textContentType={'emailAddress'}
             returnKeyType={'done'}
             placeholderTextColor={COLORS.lightText}
-            placeholder="Email"
+            placeholder={AUTH_STRINGS.userProps.email}
             onChangeText={(input) => handleInputChange(input, USER_PROPS.email)}
             value={inputValues.email}
           ></TextInput>
@@ -147,8 +144,8 @@ const Authorization = () => {
               style={textStyles.input}
               keyboardAppearance={'light'}
               placeholderTextColor={COLORS.lightText}
-              secureTextEntry={true}
-              placeholder="Full Name"
+              secureTextEntry={false}
+              placeholder={AUTH_STRINGS.userProps.fullName}
               value={inputValues.fullName}
               onChangeText={(input: string) => handleInputChange(input, USER_PROPS.fullName)}
             ></TextInput>
@@ -160,7 +157,7 @@ const Authorization = () => {
             returnKeyType={'done'}
             placeholderTextColor={COLORS.lightText}
             secureTextEntry={true}
-            placeholder="Password"
+            placeholder={AUTH_STRINGS.userProps.password}
             value={inputValues.password}
             onChangeText={(input: string) => handleInputChange(input, USER_PROPS.password)}
           ></TextInput>
@@ -171,7 +168,7 @@ const Authorization = () => {
               textContentType={'password'}
               placeholderTextColor={COLORS.lightText}
               secureTextEntry={true}
-              placeholder="Confirm password"
+              placeholder={AUTH_STRINGS.userProps.confirmPassword}
               value={inputValues.confirmPassword}
               onChangeText={(input: string) => handleInputChange(input, USER_PROPS.confirmPassword)}
             ></TextInput>
@@ -185,13 +182,15 @@ const Authorization = () => {
       </View>
       <View style={styles.actionContainer}>
         <GradientButton
-          disabled={!!error && error === AUTH_ERROR.passwordMatch}
-          title={pageTypeProps.buttonTitle}
+          disabled={
+            Boolean(error) && error === (AUTH_STRINGS.error.passwordMatch as unknown as IAUTH_ERROR)
+          }
+          title={AUTH_STRINGS[pageType].buttonTitle}
           onPress={handleAuth}
         />
         <Link
-          preLinkText={pageTypeProps.preLinkText}
-          linkText={pageTypeProps.linkText}
+          preLinkText={AUTH_STRINGS[pageType].preLinkText}
+          linkText={AUTH_STRINGS[pageType].linkText}
           onPress={togglePageType}
         />
       </View>
@@ -234,7 +233,7 @@ const styles = StyleSheet.create({
   actionContainer: {
     marginTop: 'auto',
     alignItems: 'center',
-    paddingBottom: 140,
+    paddingBottom: 8,
   },
 });
 export default Authorization;
