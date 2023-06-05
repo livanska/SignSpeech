@@ -73,6 +73,10 @@ export interface IAppStrings {
   LOADING: {
     title: string;
   };
+  NOT_FOUND: {
+    title: string;
+    buttonText: string;
+  };
 }
 
 export const APP_STRINGS = {
@@ -155,6 +159,10 @@ export const APP_STRINGS = {
     LOADING: {
       title: 'Aguarde...',
     },
+    NOT_FOUND: {
+      title: 'Esta tela não existe.',
+      buttonText: 'Voltar para a tela inicial!',
+    },
   },
   'en-US': {
     LEARNING: {
@@ -232,6 +240,10 @@ export const APP_STRINGS = {
     },
     LOADING: {
       title: 'Loading...',
+    },
+    NOT_FOUND: {
+      title: `This screen doesn't exist.`,
+      buttonText: 'Go to home screen!',
     },
   },
 };
