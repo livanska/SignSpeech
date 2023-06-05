@@ -14,12 +14,11 @@ import {
 import React, { ReactElement, useState } from 'react';
 import { useRecoilState, useResetRecoilState, useSetRecoilState } from 'recoil';
 import { authorizationState, screenState, userState } from '../state/atoms';
-import { IAuthorization, IScreen, IUser, userDefault, USER_PROPS } from '../state/types';
+import { IAuthorization, IScreen, IUser, USER_PROPS } from '../state/types';
 import ModalScreen from './ModalScreen';
 import IconLink from '../components/IconLink';
 import GradientButton from '../components/Buttons/GradientButton';
 import { logOutUser, updateUser, uploadUserPhoto } from '../firebase/user';
-import ImageData from 'react-native-canvas/dist/ImageData';
 import { SCREEN_SIZE } from '../constants/Layout';
 
 import { APP_STRINGS, IAppStrings } from '../strings';
