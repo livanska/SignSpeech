@@ -14,6 +14,9 @@ import IconLink from '../components/IconLink';
 import { FONT_TYPES, ICON_TITLES } from '../constants/Enums';
 import Spinner from 'react-native-loading-spinner-overlay/lib';
 
+import { APP_STRINGS, IAppStrings } from '../strings';
+import useLocale from '../hooks/useLocale';
+
 const Task = ({ route }) => {
   const exerciseOptions: IExerciseOptions = route.params.exerciseOptions;
   const [currentSign, setCurrentSign] = useState<ISign>(null);
@@ -29,6 +32,9 @@ const Task = ({ route }) => {
   const [isLoading, setIsLoading] = useState<boolean>(false);
   const isFocusedScreen: boolean = useIsFocused();
   const navigation = useNavigation();
+
+  const { locale } = useLocale();
+  const { LOADING }: IAppStrings = APP_STRINGS[locale];
 
   useEffect(() => {
     if (timerValue === 0 && result.allAmount && !isBack) {
@@ -110,7 +116,7 @@ const Task = ({ route }) => {
         <Spinner
           animation="fade"
           visible={true}
-          textContent={'Loading...'}
+          textContent={LOADING.title}
           size={'large'}
           textStyle={{
             fontSize: 24,

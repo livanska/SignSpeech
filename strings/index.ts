@@ -70,6 +70,9 @@ export interface IAppStrings {
       logout: string;
     };
   };
+  LOADING: {
+    title: string;
+  };
 }
 
 export const APP_STRINGS = {
@@ -149,6 +152,9 @@ export const APP_STRINGS = {
         logout: 'Encerrar sessão',
       },
     },
+    LOADING: {
+      title: 'Aguarde...',
+    },
   },
   'en-US': {
     LEARNING: {
@@ -223,6 +229,9 @@ export const APP_STRINGS = {
         edit: 'Edit profile',
         logout: 'Logout',
       },
+    },
+    LOADING: {
+      title: 'Loading...',
     },
   },
 };

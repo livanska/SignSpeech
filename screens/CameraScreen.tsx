@@ -23,6 +23,8 @@ import { LEVEL, TIME_LIMIT } from '../constants/Cards';
 import { IResultScreenProps } from './ResultScreen';
 import Spinner from 'react-native-loading-spinner-overlay';
 
+import useLocale from '../hooks/useLocale';
+import { APP_STRINGS, IAppStrings } from '../strings';
 import { textStyles } from '../constants/TextStyle';
 
 const levelSignsArray = {
@@ -104,6 +106,9 @@ const Camera = ({ route }) => {
   const canvasRef = useRef(null);
   let model: handpose.HandPose;
   let GE: any;
+
+  const { locale } = useLocale();
+  const { LOADING }: IAppStrings = APP_STRINGS[locale];
 
   useEffect(() => {
     (async () => {
@@ -472,7 +477,7 @@ const Camera = ({ route }) => {
         <Spinner
           animation="fade"
           visible={true}
-          textContent={'Loading...'}
+          textContent={LOADING.title}
           size={'large'}
           textStyle={{
             fontSize: 24,
