@@ -57,6 +57,19 @@ export interface IAppStrings {
       confirmPassword: string;
     };
   };
+  PROFILE: {
+    modal: {
+      title: string;
+      inputName: string;
+      inputEmail: string;
+      saveButton: string;
+      linkText: string;
+    };
+    options: {
+      edit: string;
+      logout: string;
+    };
+  };
 }
 
 export const APP_STRINGS = {
@@ -123,6 +136,19 @@ export const APP_STRINGS = {
         confirmPassword: 'confirmar senha',
       },
     },
+    PROFILE: {
+      modal: {
+        title: 'Editar informações pessoais',
+        inputName: 'Nome completo',
+        inputEmail: 'Email',
+        saveButton: 'Salvar',
+        linkText: 'Voltar',
+      },
+      options: {
+        edit: 'Editar perfil',
+        logout: 'Encerrar sessão',
+      },
+    },
   },
   'en-US': {
     LEARNING: {
@@ -183,6 +209,19 @@ export const APP_STRINGS = {
         fullName: 'fullName',
         profileImage: 'profileImage',
         confirmPassword: 'confirmPassword',
+      },
+    },
+    PROFILE: {
+      modal: {
+        title: 'Editar informações pessoais',
+        inputName: 'Nome completo',
+        inputEmail: 'Email',
+        saveButton: 'Save',
+        linkText: 'Back',
+      },
+      options: {
+        edit: 'Edit profile',
+        logout: 'Logout',
       },
     },
   },
