@@ -3,7 +3,11 @@ type rowMockVideos = {
   type: string;
 };
 export interface IAppStrings {
-  LEARNING: {};
+  LEARNING: {
+    title: string;
+    signToText: string;
+    textToSign: string;
+  };
   HOME: {
     internationalSignText: string;
     translateButtonText: string;
@@ -57,7 +61,11 @@ export interface IAppStrings {
 
 export const APP_STRINGS = {
   'pt-BR': {
-    LEARNING: {},
+    LEARNING: {
+      title: 'O que você quer praticar?',
+      signToText: 'Sinais para texto',
+      textToSign: 'Texto para sinais',
+    },
     HOME: {
       internationalSignText:
         'A Língua de Sinais Internacional (IS, na sigla em inglês) é uma variedade de língua de sinais utilizada em diversos contextos, especialmente em encontros internacionais como o congresso da Federação Mundial dos Surdos (WFD), eventos como as Deaflympics, em videoclipes produzidos por pessoas surdas e assistidos por outras pessoas surdas de todo o mundo, e de forma informal durante viagens e socialização.',
@@ -88,9 +96,6 @@ export const APP_STRINGS = {
         ],
       },
     },
-    learning: {},
-    translate: {},
-    profile: {},
     AUTH: {
       slogam: 'We all love in the same language.',
       error: {
@@ -118,10 +123,13 @@ export const APP_STRINGS = {
         confirmPassword: 'confirmar senha',
       },
     },
-    signTask: {},
   },
   'en-US': {
-    LEARNING: {},
+    LEARNING: {
+      title: 'What do you want to practice?',
+      signToText: 'Signs to text',
+      textToSign: 'Text to signs',
+    },
     HOME: {
       internationalSignText:
         'International Sign (IS) is a contact variety of sign language used in a variety of different contexts, particularly at international meetings such as the World Federation of the Deaf (WFD) congress, events such as the Deaflympics, in video clips produced by Deaf people and watched by other Deaf people from around the world, and informally when travelling and socialising. ',

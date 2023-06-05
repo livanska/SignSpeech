@@ -14,6 +14,9 @@ import { ICameraScreenProps } from './CameraScreen';
 import IconLink from '../components/IconLink';
 import { ICON_TITLES } from '../constants/Enums';
 
+import { APP_STRINGS, IAppStrings } from '../strings';
+import useLocale from '../hooks/useLocale';
+
 enum STATUS {
   success = 'success',
   medium = 'medium',
@@ -22,6 +25,8 @@ enum STATUS {
 
 const Select = () => {
   const navigation = useNavigation();
+  const { locale } = useLocale();
+  const { LEARNING }: IAppStrings = APP_STRINGS[locale];
 
   return (
     <View style={styles.selectContainer}>
@@ -39,14 +44,12 @@ const Select = () => {
       <View style={styles.selectInfo}>
         <Image style={styles.image} source={require('../assets/images/select-image.png')} />
         <View style={{ marginTop: -50 }}>
-          <Text style={[textStyles.rowHeading, { textAlign: 'center' }]}>
-            What do you want to practice?
-          </Text>
+          <Text style={[textStyles.rowHeading, { textAlign: 'center' }]}>{LEARNING.title}</Text>
         </View>
         <View style={styles.selectButtons}>
           <GradientButton
             disabled={false}
-            title={'Signs to text'}
+            title={LEARNING.signToText}
             onPress={() =>
               navigation.navigate(ROUTES.task, {
                 exerciseOptions: {},
@@ -55,7 +58,7 @@ const Select = () => {
           />
           <GradientButton
             disabled={false}
-            title={'Text to signs'}
+            title={LEARNING.textToSign}
             onPress={() =>
               navigation.navigate(ROUTES.signTask, {
                 cameraScreenOptions: {
