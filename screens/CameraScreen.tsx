@@ -1,8 +1,8 @@
 import { useNavigation } from '@react-navigation/native';
-import { Camera as CameraComponent, requestCameraPermissionsAsync, Constants } from 'expo-camera';
+import { Camera as CameraComponent, requestCameraPermissionsAsync } from 'expo-camera';
 import { CameraType } from 'expo-camera/build/Camera.types';
-import React, { useCallback, useEffect, useRef, useState } from 'react';
-import { View, Text, StyleSheet, Platform, Image, Linking } from 'react-native';
+import React, { useEffect, useRef, useState } from 'react';
+import { View, Text, StyleSheet, Platform } from 'react-native';
 import BackButton from '../components/Buttons/BackButton';
 import GlassPanel from '../components/GlassPanel';
 import Icon from '../components/Icon';
@@ -17,9 +17,9 @@ import { cameraWithTensors } from '@tensorflow/tfjs-react-native';
 import { ISign, Signs, easySigns, mediumSigns } from '../handimage';
 import HandGesture from '../handsigns';
 import Canvas from 'react-native-canvas';
-import { useIsFocused, useNavigationState } from '@react-navigation/core';
+import { useIsFocused } from '@react-navigation/core';
 import { COLORS } from '../constants/Colors';
-import { CARD_TYPE, LEVEL, TIME_LIMIT } from '../constants/Cards';
+import { LEVEL, TIME_LIMIT } from '../constants/Cards';
 import { IResultScreenProps } from './ResultScreen';
 import Spinner from 'react-native-loading-spinner-overlay';
 
@@ -49,10 +49,7 @@ export interface IExerciseOptions {
   sentence?: string;
 }
 
-enum CameraMode {
-  back = 1,
-  front = 2,
-}
+const CameraMode = CameraComponent.Constants.Type as CameraType;
 
 const textureDims =
   Platform.OS === 'ios' ? { width: 1080, height: 1920 } : { width: 1600, height: 1200 };
@@ -82,16 +79,16 @@ const Camera = ({ route }) => {
   const [levelTimerValue, setLevelTimerValue] = useState<number | null>(null);
   const [sentenceTimerValue, setSentenceTimerValue] = useState<number | null>(null);
   const [levelSigns, setLevelSigns] = useState<ISign[] | null>(
-    levelSignsArray[exerciseOptions?.level] ?? null
+    levelSignsArray[exerciseOptions?.level || ''] ?? null
   );
   const [sentenceSigns, setSentenceSigns] = useState<ISign[] | null>(
-    getSignsFromSentence(exerciseOptions?.sentence) ?? null
+    getSignsFromSentence(exerciseOptions?.sentence || '') ?? null
   );
   const [isCameraActive, setIsCameraActive] = useState<boolean>(false);
   const [hasPermission, setHasPermission] = useState<boolean | null>(null);
-  const [cameraType, setCameraType] = useState<CameraMode>(CameraMode.front);
-  const [currentSign, setCurrentSign] = useState<ISign>(null);
-  const [predictedSigns, setPredictedSigns] = useState<string[]>(null);
+  const [cameraType, setCameraType] = useState<CameraType>(CameraMode.front);
+  const [currentSign, setCurrentSign] = useState<ISign | null>(null);
+  const [predictedSigns, setPredictedSigns] = useState<string[] | null>(null);
   const [isCorrectSign, setIsCorrectSign] = useState<boolean | null>(null);
   const [shouldOverlay, setShouldOverlay] = useState<boolean | null>(false);
   const [isBack, setIsBack] = useState<boolean>(false);
@@ -105,7 +102,7 @@ const Camera = ({ route }) => {
   const isFocusedScreen: boolean = useIsFocused();
   let cameraRef = useRef(null);
   const canvasRef = useRef(null);
-  let model: any;
+  let model: handpose.HandPose;
   let GE: any;
 
   useEffect(() => {
@@ -152,7 +149,7 @@ const Camera = ({ route }) => {
         });
         getNextRandomSign();
       } else {
-        cameraRef = null;
+        cameraRef.current = null;
         exerciseOptions?.timeLimit && setTimerValue(0);
         exerciseOptions?.level && setLevelTimerValue(0);
         exerciseOptions?.sentence && setSentenceTimerValue(0);
@@ -175,36 +172,42 @@ const Camera = ({ route }) => {
     setHasPermission(isCameraActive);
   }, [isCameraActive]);
 
-  const prepareTF = async (): Promise<void> => {
-    model = await handpose.load({ maxContinuousChecks: 10 });
-    GE = new fp.GestureEstimator([
-      HandGesture.aSign,
-      HandGesture.bSign,
-      HandGesture.cSign,
-      HandGesture.dSign,
-      HandGesture.eSign,
-      HandGesture.fSign,
-      HandGesture.gSign,
-      HandGesture.hSign,
-      HandGesture.iSign,
-      HandGesture.jSign,
-      HandGesture.kSign,
-      HandGesture.lSign,
-      HandGesture.mSign,
-      HandGesture.nSign,
-      HandGesture.oSign,
-      HandGesture.pSign,
-      HandGesture.qSign,
-      HandGesture.rSign,
-      HandGesture.sSign,
-      HandGesture.tSign,
-      HandGesture.uSign,
-      HandGesture.vSign,
-      HandGesture.wSign,
-      HandGesture.xSign,
-      HandGesture.ySign,
-      HandGesture.zSign,
-    ]);
+  const prepareTF = async (): Promise<boolean> => {
+    try {
+      model = await handpose.load({ maxContinuousChecks: 10 });
+      GE = new fp.GestureEstimator([
+        HandGesture.aSign,
+        HandGesture.bSign,
+        HandGesture.cSign,
+        HandGesture.dSign,
+        HandGesture.eSign,
+        HandGesture.fSign,
+        HandGesture.gSign,
+        HandGesture.hSign,
+        HandGesture.iSign,
+        HandGesture.jSign,
+        HandGesture.kSign,
+        HandGesture.lSign,
+        HandGesture.mSign,
+        HandGesture.nSign,
+        HandGesture.oSign,
+        HandGesture.pSign,
+        HandGesture.qSign,
+        HandGesture.rSign,
+        HandGesture.sSign,
+        HandGesture.tSign,
+        HandGesture.uSign,
+        HandGesture.vSign,
+        HandGesture.wSign,
+        HandGesture.xSign,
+        HandGesture.ySign,
+        HandGesture.zSign,
+      ]);
+    } catch (error) {
+      console.log('[ON LOAD MODEL][ERROR]:', error);
+      return false;
+    }
+    return true;
   };
 
   useEffect(() => {
@@ -323,8 +326,8 @@ const Camera = ({ route }) => {
   const setRandomSign = () => setCurrentSign(Signs[Math.floor(Math.random() * Signs.length)]);
 
   const setRandomSignForLevel = () => {
-    let sign = levelSigns[Math.floor(Math.random() * levelSigns?.length)];
-    setLevelSigns(levelSigns?.filter((s: ISign) => s !== sign));
+    let sign = levelSigns[Math.floor(Math.random() * (levelSigns?.length || 0))];
+    setLevelSigns(levelSigns?.filter((s: ISign) => s !== sign) || null);
     setCurrentSign(sign);
   };
 
@@ -335,34 +338,37 @@ const Camera = ({ route }) => {
     setCurrentSign(first || null);
   };
 
-  const detect = async (nextImageTensor: any, model: any) => {
-    if (!hasPermission || !isCameraActive || !nextImageTensor) return;
+  const detect = async (nextImageTensor: tf.Tensor3D, model: handpose.HandPose) => {
+    const shouldContinue = hasPermission || isCameraActive || Boolean(nextImageTensor.size);
+
+    if (!shouldContinue) return;
 
     const video = nextImageTensor;
 
     canvasRef.current.width = SCREEN_SIZE.width;
     canvasRef.current.height = SCREEN_SIZE.height;
 
-    model.estimateHands(video).then((hand: { landmarks: any }[]) => {
+    model.estimateHands(video).then((hand: handpose.AnnotatedPrediction[]) => {
       if (hand[0]) {
         try {
           const estimatedGestures = GE.estimate(hand[0].landmarks, 7);
           const canvas = canvasRef.current.getContext('2d');
           draw(hand, canvas);
           if (estimatedGestures.gestures !== undefined && estimatedGestures.gestures.length > 0) {
-            setPredictedSigns(estimatedGestures.gestures.map((el) => el.name));
+            setPredictedSigns(estimatedGestures.gestures.map((gesture) => gesture.name));
           }
-          tf.dispose(video);
-        } catch {
+          tf.dispose([video]);
+        } catch (error) {
+          console.log('[ON ESTIMATE GESTURES][ERROR]:', error);
           return;
         }
       }
     });
   };
 
-  const draw = (prediction: any, canvas: any) => {
-    if (prediction.length > 0 && !isCorrectSign) {
-      prediction.forEach((prediction) => {
+  const draw = (predictions: handpose.AnnotatedPrediction[], canvas: any) => {
+    if (predictions.length > 0 && !isCorrectSign) {
+      predictions.forEach((prediction) => {
         const markers = prediction.landmarks;
         let widthCoef = 3.4;
         let heightCoef = 4.6;
@@ -391,9 +397,9 @@ const Camera = ({ route }) => {
     }
   };
 
-  const handleCameraStream = async (images: any) => {
+  const handleCameraStream = async (images: IterableIterator<tf.Tensor3D>) => {
     await prepareTF();
-    setIsLoading(false);
+    setIsLoading(() => false);
     exerciseOptions?.timeLimit && setTimerValue(exerciseOptions?.timeLimit * 60);
     exerciseOptions?.level && setLevelTimerValue(LEVEL_TIMERS[exerciseOptions?.level]);
     exerciseOptions?.sentence && setSentenceTimerValue(defaultTimerValue);
@@ -401,13 +407,14 @@ const Camera = ({ route }) => {
 
     const loop = async () => {
       if (model) {
-        const nextImageTensor = images.next().value;
+        const nextImageTensor = images.next().value as tf.Tensor3D;
         if (nextImageTensor) await detect(nextImageTensor, model);
       }
       requestAnimationFrameId = requestAnimationFrame(() => {
         !isCorrectSign && loop();
       });
     };
+
     isCameraActive && model && GE && loop();
   };
 
