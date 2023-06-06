@@ -4,7 +4,7 @@ import { Localization as LocalizationType } from 'expo-localization';
 const languages = {
   portuguese: 'pt-BR',
   english: 'en-US',
-  default: 'pt-BR',
+  default: 'en-US',
 };
 
 function useLocale() {
