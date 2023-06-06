@@ -1,10 +1,6 @@
-import { ScrollView, StyleSheet, TouchableOpacity, Text, View } from 'react-native';
-import TitleRow from '../components/TitleRow';
-import { CARD_TYPE, EXERCISE_TYPE, LEVEL, TIME_LIMIT, TRANSLATION_TYPE } from '../constants/Cards';
-import Link from '../components/Link';
+import { StyleSheet, Text, View } from 'react-native';
 import { useNavigation } from '@react-navigation/core';
 import { ROUTES } from '../navigation/routes';
-import { COLORS } from '../constants/Colors';
 import { SCREEN_SIZE } from '../constants/Layout';
 import { textStyles } from '../constants/TextStyle';
 import GradientButton from '../components/Buttons/GradientButton';
