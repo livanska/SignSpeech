@@ -11,6 +11,8 @@ import GradientButton from '../components/Buttons/GradientButton';
 import StatusCircle from '../components/StatusCircle';
 import { useEffect, useState } from 'react';
 
+import useLocale from '../hooks/useLocale';
+import { APP_STRINGS, IAppStrings } from '../strings';
 export interface IResultScreenProps {
   allAmount: number;
   allCorrectAmount: number;
@@ -28,6 +30,9 @@ const Result = ({ route }) => {
   const navigation = useNavigation();
   const [percent] = useState<number>(+((allCorrectAmount * 100) / allAmount).toFixed(0));
 
+  const { locale } = useLocale();
+  const { RESULT }: IAppStrings = APP_STRINGS[locale];
+
   useEffect(() => {
     setStatus(percent >= 50 ? (percent >= 80 ? STATUS.success : STATUS.medium) : STATUS.failed);
   }, []);
@@ -35,11 +40,11 @@ const Result = ({ route }) => {
   const getStatusText = (): string => {
     switch (status) {
       case STATUS.success:
-        return `Congratulations! You guessed ${percent}% of signs!`;
+        return `${RESULT.success.part1} ${percent}${RESULT.success.part2}`;
       case STATUS.medium:
-        return `Not bad! You guessed ${percent}% of signs!`;
+        return `${RESULT.medium.part1} ${percent}${RESULT.medium.part2}`;
       case STATUS.failed:
-        return `Failed! You guessed ${percent}% of signs, try better!`;
+        return `${RESULT.fail.part1} ${percent}${RESULT.fail.part2}`;
       default:
         return '';
     }
@@ -60,7 +65,7 @@ const Result = ({ route }) => {
       </View>
       <GradientButton
         disabled={false}
-        title={'Got it!'}
+        title={RESULT.buttonText}
         onPress={() => navigation.navigate(ROUTES.root, { screen: ROUTES.home })}
       />
     </View>

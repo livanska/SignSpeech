@@ -60,6 +60,12 @@ export interface IAppStrings {
   TASK: {
     title: string;
   };
+  RESULT: {
+    buttonText: string;
+    fail: { part1: string; part2: string };
+    medium: { part1: string; part2: string };
+    success: { part1: string; part2: string };
+  };
   PROFILE: {
     modal: {
       title: string;
@@ -149,6 +155,12 @@ export const APP_STRINGS = {
     TASK: {
       title: 'Qual letra é essa?',
     },
+    RESULT: {
+      buttonText: 'Entendi!',
+      fail: { part1: 'Oops!\n Você acertou apenas', part2: '% dos sinais. Tente novamente!' },
+      medium: { part1: 'Isso ai!\n Você acertou', part2: '% dos sinais!' },
+      success: { part1: 'Parabéns!\n Você acertou', part2: '% dos sinais!' },
+    },
     PROFILE: {
       modal: {
         title: 'Editar informações pessoais',
@@ -233,6 +245,21 @@ export const APP_STRINGS = {
     },
     TASK: {
       title: 'Which letter is it?',
+    },
+    RESULT: {
+      buttonText: 'Got it!',
+      fail: {
+        part1: 'Congratulations! You guessed',
+        part2: '% of signs!',
+      },
+      medium: {
+        part1: 'Not bad! You guessed',
+        part2: '% of signs!',
+      },
+      success: {
+        part1: 'Failed! You guessed',
+        part2: '% of signs, try better!',
+      },
     },
     PROFILE: {
       modal: {
