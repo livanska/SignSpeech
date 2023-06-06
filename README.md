@@ -2,6 +2,10 @@
 
 ASL learning and practicing React Native mobile application using Tensorflow.js handpose and fingerpose models for realtime gesture detection
 
+| Home | Learning | Exercices | Translate |
+| --- | --- | --- | --- |
+| ![image](https://github.com/YuryRegis/SignSpeech/assets/29512626/e91751e1-9391-4027-9e65-837a874a46a7) | ![image](https://github.com/YuryRegis/SignSpeech/assets/29512626/c8c0cc47-92eb-4ba9-9fe3-eee16ff55a03) | ![image](https://github.com/YuryRegis/SignSpeech/assets/29512626/892d820b-a3fe-4a49-b3fb-a8c47eb96f0a) | ![image](https://github.com/YuryRegis/SignSpeech/assets/29512626/31b110fb-b3b9-40d0-8a11-93545d7995e9) |
+
 ## Technologies
 
 Project is created with:
@@ -9,7 +13,7 @@ Project is created with:
 - Expo version: 48.0.0
 - React Native version: 0.71.3
 - Recoil version: 0.6.1
-- Tensorflow version: 3.14.0
+- Tensorflow version: 4.6.0
 
 ## Installation
 
