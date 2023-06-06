@@ -24,7 +24,7 @@
     "@react-navigation/native-stack": "^6.1.0",
     "@react-navigation/stack": "^6.1.1",
     "@tensorflow-models/handpose": "0.0.7",
-    "@tensorflow/tfjs": "^3.14.0",
+    "@tensorflow/tfjs": "^4.6.0",
     "@tensorflow/tfjs-react-native": "^0.8.0",
     "@types/react-native-dotenv": "^0.2.0",
     "@types/react-native-snap-carousel": "^3.8.5",
