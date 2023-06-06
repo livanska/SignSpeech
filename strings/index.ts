@@ -29,6 +29,10 @@ export interface IAppStrings {
       subtitle: string;
       items: rowMockVideos[];
     };
+    link: {
+      linkText: string;
+      preLinkText: string;
+    };
   };
   AUTH: {
     slogam: string;
@@ -124,6 +128,10 @@ export const APP_STRINGS = {
           { videoId: '3CRo7nb7bPE', type: 'video' },
         ],
       },
+      link: {
+        linkText: 'Aprenda agora!',
+        preLinkText: 'Não sabe como conversar com o seu público através da linguagem de sinais?',
+      },
     },
     AUTH: {
       slogam: 'We all love in the same language.',
@@ -214,6 +222,10 @@ export const APP_STRINGS = {
           { videoId: 'G6hVRVG74lc', type: 'video' },
           { videoId: '91foGHKuwL0', type: 'video' },
         ],
+      },
+      link: {
+        linkText: 'Learn now!',
+        preLinkText: 'Still don’t know how to show your speech to deaf audience?',
       },
     },
     AUTH: {

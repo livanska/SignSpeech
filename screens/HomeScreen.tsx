@@ -175,8 +175,8 @@ const Home = () => {
         <Link
           onPress={() => navigation.navigate(ROUTES.root, { screen: ROUTES.select })}
           isHeading={true}
-          preLinkText={'Still don’t know how to show your speech to deaf audience?'}
-          linkText={'Learn now!'}
+          preLinkText={HOME.link.preLinkText}
+          linkText={HOME.link.linkText}
         />
         <TitleRow {...rowMockspeedTest} />
         <TitleRow {...rowMockStepByStep} />
