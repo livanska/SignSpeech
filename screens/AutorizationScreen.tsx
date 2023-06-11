@@ -39,8 +39,8 @@ export interface IUserRegisterInput extends IUserInput {
 }
 
 const userDefaultInputsValues: IUserRegisterInput = {
-  email: 'yury_regis@hotmail.com',
-  password: '010203',
+  email: '',
+  password: '',
   confirmPassword: '',
   fullName: '',
 };
