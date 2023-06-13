@@ -45,6 +45,11 @@ export default {
       },
       package: 'com.app.signSpeech',
     },
+    extra: {
+      eas: {
+        projectId: '62809b86-a25c-4d38-b29a-bd4de5f62513',
+      },
+    },
     web: {
       favicon: './assets/images/favicon.png',
     },

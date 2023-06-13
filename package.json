@@ -15,6 +15,8 @@
     "preset": "jest-expo"
   },
   "dependencies": {
+    "@expo/config-plugins": "~6.0.0",
+    "@expo/prebuild-config": "~6.0.0",
     "@expo/vector-icons": "^13.0.0",
     "@react-native-async-storage/async-storage": "1.17.11",
     "@react-native-firebase/app": "^18.0.0",
@@ -34,7 +36,6 @@
     "expo-app-loading": "~2.0.0",
     "expo-asset": "~8.9.1",
     "expo-camera": "~13.2.1",
-    "expo-cli": "^5.4.3",
     "expo-constants": "~14.2.1",
     "expo-font": "~11.1.1",
     "expo-gl": "~12.4.0",
@@ -50,7 +51,7 @@
     "firebase": "^9.6.11",
     "react": "18.2.0",
     "react-dom": "18.2.0",
-    "react-native": "0.71.3",
+    "react-native": "0.71.8",
     "react-native-canvas": "^0.1.38",
     "react-native-dotenv": "^3.3.1",
     "react-native-fs": "^2.19.0",
@@ -79,6 +80,11 @@
     "prettier": "2.5.1",
     "react-test-renderer": "17.0.1",
     "typescript": "^4.9.4"
+  },
+  "resolutions": {
+    "@expo/config-plugins": "~6.0.0",
+    "@expo/prebuild-config": "~6.0.0",
+    "expo-modules-autolinking": "~1.1.0 || ~1.2.0"
   },
   "rnpm": {
     "assets": [
