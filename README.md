@@ -17,13 +17,17 @@ Project is created with:
 
 ## Installation
 
-- Install Expo Go app from Play Market or App Store.
+- Make sure you grant permission to install apps from outside the Google store;
+- Allow camera use while using the app;
 - Follow the link or scan the QR code bellow:
   ```
-  exp://exp.host/@livanska/sign-speech?release-channel=default
+  https://expo.dev/accounts/yury_regis/projects/sign-speech/builds/8acef8f2-b89d-44ae-afd3-39d68f5400ac
   ```
-  <img width="134" title="SignSpeech QR code" alt="Screenshot 2022-06-05 114105" src="https://user-images.githubusercontent.com/56972871/172043349-2f184c94-fe52-4b1d-81ef-c0298091224e.png">
 
+| APK | AAB |
+| --- | --- |
+| <img width="400px" title="SignSpeech QR code" alt="QR CODE TO DOWNLOAD APP" src="https://github.com/YuryRegis/SignSpeech/assets/29512626/882de8ff-755a-4804-9be5-fb15dd5d8f0e"> | <img width="390px" title="SignSpeech QR code" alt="QR CODE TO DOWNLOAD APP" src="https://github.com/YuryRegis/SignSpeech/assets/29512626/d3cbf544-2436-4f37-b602-913a1ffc8b7f"> | 
+  
 ## Credits
 
 [@Liliia Ivanska](https://github.com/livanska) (Author)
