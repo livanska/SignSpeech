@@ -1,12 +1,18 @@
 import { StyleSheet, TouchableOpacity, Text, View } from 'react-native';
 import { RootStackScreenProps } from '../navigation/types';
 
+import useLocale from '../hooks/useLocale';
+import { APP_STRINGS, IAppStrings } from '../strings';
+
 export default function NotFoundScreen({ navigation }: RootStackScreenProps<'NotFound'>) {
+  const { locale } = useLocale();
+  const { NOT_FOUND }: IAppStrings = APP_STRINGS[locale];
+
   return (
     <View style={styles.container}>
-      <Text style={styles.title}>This screen doesn't exist.</Text>
+      <Text style={styles.title}>{NOT_FOUND.title}</Text>
       <TouchableOpacity onPress={() => navigation.replace('Root')} style={styles.link}>
-        <Text style={styles.linkText}>Go to home screen!</Text>
+        <Text style={styles.linkText}>{NOT_FOUND.buttonText}</Text>
       </TouchableOpacity>
     </View>
   );

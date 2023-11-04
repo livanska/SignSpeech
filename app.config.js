@@ -1,5 +1,6 @@
 export default {
   expo: {
+    jsEngine: 'jsc',
     packagerOpts: {
       config: 'metro.config.js',
       sourceExts: [
@@ -37,11 +38,17 @@ export default {
       bundleIdentifier: 'com.app.signSpeech',
     },
     android: {
+      softwareKeyboardLayoutMode: 'pan',
       adaptiveIcon: {
         foregroundImage: './assets/images/adaptive-icon.png',
         backgroundColor: '#ffffff',
       },
       package: 'com.app.signSpeech',
+    },
+    extra: {
+      eas: {
+        projectId: '62809b86-a25c-4d38-b29a-bd4de5f62513',
+      },
     },
     web: {
       favicon: './assets/images/favicon.png',

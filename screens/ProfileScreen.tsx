@@ -14,13 +14,15 @@ import {
 import React, { ReactElement, useState } from 'react';
 import { useRecoilState, useResetRecoilState, useSetRecoilState } from 'recoil';
 import { authorizationState, screenState, userState } from '../state/atoms';
-import { IAuthorization, IScreen, IUser, userDefault, USER_PROPS } from '../state/types';
+import { IAuthorization, IScreen, IUser, USER_PROPS } from '../state/types';
 import ModalScreen from './ModalScreen';
 import IconLink from '../components/IconLink';
 import GradientButton from '../components/Buttons/GradientButton';
 import { logOutUser, updateUser, uploadUserPhoto } from '../firebase/user';
-import ImageData from 'react-native-canvas/dist/ImageData';
 import { SCREEN_SIZE } from '../constants/Layout';
+
+import { APP_STRINGS, IAppStrings } from '../strings';
+import useLocale from '../hooks/useLocale';
 
 const Profile = () => {
   const removeUser = useResetRecoilState(userState);
@@ -28,6 +30,9 @@ const Profile = () => {
   const setScreen = useSetRecoilState(screenState);
   const setAuthorization = useSetRecoilState(authorizationState);
   const [modalVisible, setModalVisible] = useState(false);
+
+  const { locale } = useLocale();
+  const { PROFILE }: IAppStrings = APP_STRINGS[locale];
 
   let inputValues: IUser;
 
@@ -102,12 +107,12 @@ const Profile = () => {
 
   const profileOptions: IMenuItemProps[] = [
     {
-      title: 'Edit profile',
+      title: PROFILE.options.edit,
       icon: ICON_TITLES.edit,
       onPress: openModal,
     },
     {
-      title: 'Log out',
+      title: PROFILE.options.logout,
       icon: ICON_TITLES.logOut,
       onPress: handleLogOut,
     },
@@ -118,11 +123,11 @@ const Profile = () => {
       <ModalScreen height={380} visible={modalVisible} close={() => setModalVisible(false)}>
         <View style={styles.modalContainer}>
           <View style={styles.modalTextContainer}>
-            <Text style={textStyles.heading}>Edit personal information</Text>
+            <Text style={textStyles.heading}>{PROFILE.modal.title}</Text>
           </View>
           <View style={styles.inputsContainer}>
             <View style={styles.modalTextContainer}>
-              <Text style={textStyles.aboveInputHeader}>Full Name</Text>
+              <Text style={textStyles.aboveInputHeader}>{PROFILE.modal.inputName}</Text>
             </View>
             <TextInput
               style={textStyles.input}
@@ -130,13 +135,13 @@ const Profile = () => {
               textContentType={'name'}
               returnKeyType={'done'}
               placeholderTextColor={COLORS.lightText}
-              placeholder="Full Name"
+              placeholder={PROFILE.modal.inputName}
               onChangeText={(input) => handleInputChange(input, USER_PROPS.fullName)}
               defaultValue={user.fullName}
             ></TextInput>
             <View style={styles.separator} />
             <View style={styles.modalTextContainer}>
-              <Text style={textStyles.aboveInputHeader}>Email</Text>
+              <Text style={textStyles.aboveInputHeader}>{PROFILE.modal.inputEmail}</Text>
             </View>
             <TextInput
               style={textStyles.input}
@@ -144,20 +149,23 @@ const Profile = () => {
               textContentType={'emailAddress'}
               returnKeyType={'done'}
               placeholderTextColor={COLORS.lightText}
-              placeholder="Email"
+              placeholder={'email@example.com'}
               defaultValue={user.email}
               onChangeText={(input: string) => handleInputChange(input, USER_PROPS.email)}
             ></TextInput>
           </View>
           <View style={styles.buttonsRow}>
             <IconLink
-              linkText="Back"
+              linkText={PROFILE.modal.linkText}
               onPress={closeModal}
               icon={ICON_TITLES.chevronLeft}
               gapSize={2}
               iconSize={28}
             />
-            <GradientButton title="Save" onPress={async () => await saveUser()} />
+            <GradientButton
+              title={PROFILE.modal.saveButton}
+              onPress={async () => await saveUser()}
+            />
           </View>
         </View>
       </ModalScreen>
